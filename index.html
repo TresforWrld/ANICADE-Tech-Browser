@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANICADE Tech Browser — Dev Resource Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0B1C2D;
+  --surface: #0d2035;
+  --card: rgba(13,32,53,0.92);
+  --accent: #00BFFF;
+  --gold: #C6A85C;
+  --text: #F5F7FA;
+  --muted: #94A3B8;
+  --border: rgba(255,255,255,0.07);
+  --border-gold: rgba(198,168,92,0.2);
+  --success: #39ff14;
+  --danger: #ff4444;
+  --green: #10b981;
+  --font-head: 'Orbitron', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--primary);
+  color:var(--text);
+  font-family:var(--font-body);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* GRID BG */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,191,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,191,255,0.03) 1px,transparent 1px);
+  background-size:50px 50px;
+  pointer-events:none;z-index:0;
+}
+
+/* SPINNING RINGS */
+.rings-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;}
+.ring-el{position:absolute;top:50%;left:50%;border:1.5px solid transparent;border-radius:38% 62% 63% 37% / 41% 44% 56% 59%;will-change:transform;}
+.ring-el:nth-child(1){width:900px;height:900px;margin:-450px 0 0 -450px;border-color:rgba(0,191,255,0.06);animation:spin1 24s linear infinite;}
+.ring-el:nth-child(2){width:650px;height:650px;margin:-325px 0 0 -325px;border-radius:41% 44% 56% 59% / 38% 62% 63% 37%;border-color:rgba(198,168,92,0.05);animation:spin2 18s linear infinite;}
+.ring-el:nth-child(3){width:400px;height:400px;margin:-200px 0 0 -200px;border-color:rgba(0,191,255,0.04);animation:spin1 36s linear infinite reverse;}
+@keyframes spin1{to{transform:rotate(360deg);}}
+@keyframes spin2{to{transform:rotate(-360deg);}}
+
+/* WELCOME POPUP */
+#welcomePopup{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(16px);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .6s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.welcome-box{
+  background:linear-gradient(145deg,#0d2035,#0b1c2d);
+  border:1px solid var(--border-gold);
+  border-radius:20px;
+  padding:48px 40px;
+  max-width:480px;width:90%;
+  text-align:center;
+  position:relative;
+  box-shadow:0 0 80px rgba(0,191,255,0.1),0 40px 80px rgba(0,0,0,0.6);
+  animation:scaleIn .5s cubic-bezier(.34,1.28,.64,1);
+}
+@keyframes scaleIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.welcome-logo-ring{position:relative;width:100px;height:100px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;}
+.welcome-logo-ring::before{content:'';position:absolute;inset:0;border-radius:38% 62% 63% 37% / 41% 44% 56% 59%;border:2px solid rgba(198,168,92,0.5);animation:spin1 5s linear infinite;}
+.welcome-logo-ring::after{content:'';position:absolute;inset:8px;border-radius:41% 44% 56% 59% / 38% 62% 63% 37%;border:1.5px solid rgba(0,191,255,0.4);animation:spin2 3s linear infinite;}
+.welcome-logo-img{width:72px;height:72px;border-radius:50%;object-fit:cover;position:relative;z-index:2;border:2px solid rgba(198,168,92,0.3);box-shadow:0 0 24px rgba(198,168,92,0.2);}
+.welcome-box h2{font-family:var(--font-head);font-size:22px;font-weight:900;color:var(--gold);letter-spacing:2px;margin-bottom:8px;}
+.welcome-box p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+.welcome-progress{width:100%;height:3px;background:var(--border);border-radius:2px;margin-bottom:20px;overflow:hidden;}
+.welcome-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:2px;width:0%;transition:width .1s linear;}
+.welcome-timer{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:2px;margin-bottom:20px;}
+.welcome-btn{
+  background:linear-gradient(135deg,#00BFFF,#0077aa);
+  color:#0B1C2D;border:none;padding:12px 32px;
+  border-radius:30px;font-family:var(--font-head);font-size:11px;
+  font-weight:700;letter-spacing:2px;cursor:pointer;
+  transition:all .3s;box-shadow:0 0 20px rgba(0,191,255,0.3);
+}
+.welcome-btn:hover{box-shadow:0 0 35px rgba(0,191,255,0.5);}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:500;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 28px;
+  background:rgba(11,28,45,0.97);
+  border-bottom:1px solid var(--border-gold);
+  backdrop-filter:blur(20px);
+  animation:fadeDown .7s ease;
+}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+.logo{font-family:var(--font-head);font-size:17px;font-weight:900;color:var(--gold);letter-spacing:2px;text-decoration:none;text-shadow:0 0 16px rgba(198,168,92,0.3);}
+.logo span{color:var(--accent);}
+.nav-links{display:flex;gap:4px;align-items:center;flex-wrap:wrap;}
+.nav-links a,.nav-btn{
+  color:var(--muted);text-decoration:none;
+  padding:7px 12px;border-radius:6px;
+  font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+  transition:all .2s;border:none;background:transparent;cursor:pointer;
+  font-family:var(--font-body);
+}
+.nav-links a:hover,.nav-btn:hover{background:rgba(0,191,255,0.1);color:var(--accent);}
+.nav-btn.active{background:rgba(0,191,255,0.12);color:var(--accent);}
+.nav-clock{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:1px;padding:6px 12px;background:rgba(198,168,92,0.08);border:1px solid var(--border-gold);border-radius:6px;white-space:nowrap;}
+
+/* HERO */
+.hero{position:relative;z-index:1;text-align:center;padding:60px 20px 50px;animation:fadeUp .9s ease .15s both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.hero-logo-wrap{display:flex;justify-content:center;margin-bottom:28px;}
+.hero-logo-ring{position:relative;width:130px;height:130px;display:flex;align-items:center;justify-content:center;}
+.hero-logo-ring::before{content:'';position:absolute;inset:0;border-radius:38% 62% 63% 37% / 41% 44% 56% 59%;border:2px solid rgba(198,168,92,0.45);animation:spin1 6s linear infinite;}
+.hero-logo-ring::after{content:'';position:absolute;inset:8px;border-radius:41% 44% 56% 59% / 38% 62% 63% 37%;border:1.5px solid rgba(0,191,255,0.35);animation:spin2 4s linear infinite;}
+.hero-logo-img{width:96px;height:96px;border-radius:50%;object-fit:cover;position:relative;z-index:2;box-shadow:0 0 28px rgba(198,168,92,0.3),0 0 50px rgba(0,191,255,0.1);border:2px solid rgba(198,168,92,0.35);}
+.hero-eyebrow{font-family:var(--font-head);font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;opacity:.8;}
+.hero h1{font-family:var(--font-head);font-size:clamp(30px,6vw,56px);font-weight:900;line-height:1.1;margin-bottom:16px;letter-spacing:-1px;}
+.hero h1 .gold{color:var(--gold);text-shadow:0 0 28px rgba(198,168,92,0.4);}
+.hero h1 .blue{color:var(--accent);text-shadow:0 0 28px rgba(0,191,255,0.35);}
+
+/* TYPEWRITER */
+.typewriter-wrap{min-height:32px;margin-bottom:28px;}
+.typewriter{font-size:15px;color:var(--muted);font-weight:500;letter-spacing:.5px;}
+.typewriter-cursor{display:inline-block;width:2px;height:16px;background:var(--accent);margin-left:3px;vertical-align:middle;animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0}}
+
+/* SEARCH */
+.search-wrap{max-width:720px;margin:0 auto 24px;position:relative;}
+.search-bar{
+  display:flex;align-items:center;
+  background:rgba(13,32,53,0.95);
+  border:1px solid rgba(0,191,255,0.25);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 0 30px rgba(0,191,255,0.08);
+  transition:border-color .3s,box-shadow .3s;
+}
+.search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 40px rgba(0,191,255,0.18);}
+.search-cat{
+  background:rgba(0,191,255,0.08);border:none;border-right:1px solid var(--border);
+  color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:600;
+  letter-spacing:.5px;padding:15px 16px;outline:none;cursor:pointer;min-width:130px;
+}
+.search-cat option{background:var(--surface);}
+.search-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-body);font-size:14px;font-weight:500;padding:15px 18px;}
+.search-input::placeholder{color:var(--muted);}
+.search-btn{
+  background:linear-gradient(135deg,#00BFFF,#0077aa);
+  border:none;color:#0B1C2D;font-family:var(--font-head);font-size:10px;
+  font-weight:700;letter-spacing:2px;padding:15px 24px;cursor:pointer;transition:all .2s;
+}
+.search-btn:hover{background:linear-gradient(135deg,#33cfff,#009fd4);}
+.search-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.tag{
+  font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  background:rgba(0,191,255,0.06);border:1px solid var(--border);
+  border-radius:4px;padding:4px 10px;cursor:pointer;transition:all .2s;letter-spacing:.5px;
+}
+.tag:hover{color:var(--accent);border-color:rgba(0,191,255,0.3);}
+
+/* SEARCH RESULTS */
+#search-results{max-width:1100px;margin:0 auto 40px;display:none;animation:fadeUp .3s ease;}
+.result-header{font-family:var(--font-head);font-size:10px;color:var(--muted);letter-spacing:3px;margin-bottom:16px;}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+
+/* MARQUEE */
+.marquee-section{position:relative;z-index:1;margin:0 0 60px;padding:20px 0;overflow:hidden;}
+.marquee-label{text-align:center;font-family:var(--font-mono);font-size:9px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:20px;}
+.marquee-row{display:flex;gap:10px;overflow:hidden;margin-bottom:10px;}
+.marquee-inner{display:flex;gap:10px;flex-shrink:0;animation:mLeft 35s linear infinite;}
+.marquee-row.rev .marquee-inner{animation:mRight 40s linear infinite;}
+.marquee-row.slow .marquee-inner{animation:mLeft 55s linear infinite;}
+@keyframes mLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes mRight{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.pill{
+  flex-shrink:0;background:var(--card);border:1px solid var(--border);
+  border-radius:8px;padding:8px 16px;display:flex;align-items:center;gap:8px;
+  cursor:pointer;transition:all .2s;white-space:nowrap;user-select:none;
+}
+.pill:hover{border-color:rgba(0,191,255,0.3);background:rgba(0,191,255,0.07);transform:translateY(-2px);}
+.pill svg{flex-shrink:0;}
+.pill-label{font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--text);}
+.pill-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.pill-dot.free{background:#39ff14;box-shadow:0 0 5px #39ff14;}
+.pill-dot.paid{background:var(--gold);box-shadow:0 0 5px var(--gold);}
+.pill-dot.ai{background:var(--accent);box-shadow:0 0 5px var(--accent);}
+.pill-dot.oss{background:#a78bfa;box-shadow:0 0 5px #a78bfa;}
+
+/* CONTAINER */
+.container{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 20px;}
+
+/* SECTION */
+.section{margin-bottom:60px;}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:14px;}
+.sec-title{font-family:var(--font-head);font-size:clamp(18px,4vw,28px);font-weight:700;letter-spacing:3px;color:#fff;}
+.sec-title .blue{color:var(--accent);}
+.sec-title .gold{color:var(--gold);}
+.sec-meta{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;}
+.sec-count{font-family:var(--font-mono);font-size:11px;color:var(--accent);}
+
+/* CAT TABS */
+.cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px;}
+.cat-tab{
+  padding:7px 14px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-family:var(--font-body);
+  font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .2s;
+}
+.cat-tab.active,.cat-tab:hover{border-color:rgba(0,191,255,0.3);background:rgba(0,191,255,0.08);color:var(--accent);}
+
+/* RESOURCE GRID */
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.r-card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:16px;transition:all .3s;position:relative;overflow:hidden;cursor:pointer;
+  animation:fadeUp .4s ease both;
+}
+.r-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--gold));opacity:0;transition:opacity .3s;}
+.r-card:hover{border-color:rgba(0,191,255,0.25);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 20px rgba(0,191,255,0.06);}
+.r-card:hover::before{opacity:1;}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.card-icon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(0,191,255,0.08);border:1px solid rgba(0,191,255,0.12);flex-shrink:0;}
+.card-badge{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+.badge-free{background:rgba(57,255,20,0.08);color:#39ff14;border:1px solid rgba(57,255,20,0.2);}
+.badge-paid{background:rgba(198,168,92,0.08);color:var(--gold);border:1px solid var(--border-gold);}
+.badge-ai{background:rgba(0,191,255,0.08);color:var(--accent);border:1px solid rgba(0,191,255,0.2);}
+.badge-oss{background:rgba(167,139,250,0.08);color:#a78bfa;border:1px solid rgba(167,139,250,0.2);}
+.card-title{font-family:var(--font-body);font-size:14px;font-weight:700;letter-spacing:.5px;color:var(--text);margin-bottom:5px;}
+.card-desc{font-family:var(--font-body);font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:12px;}
+.card-foot{display:flex;align-items:center;justify-content:space-between;}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.c-tag{font-family:var(--font-mono);font-size:9px;color:#475569;background:rgba(71,85,105,0.2);border-radius:3px;padding:2px 6px;letter-spacing:.5px;}
+.card-arrow{color:var(--accent);font-size:14px;transition:transform .2s;}
+.r-card:hover .card-arrow{transform:translateX(4px);}
+
+/* SOLUTIONS */
+.solutions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+.sol-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:all .3s;}
+.sol-card::after{content:attr(data-num);position:absolute;right:16px;bottom:8px;font-family:var(--font-head);font-size:60px;color:rgba(0,191,255,0.04);line-height:1;pointer-events:none;}
+.sol-card:hover{border-color:rgba(0,191,255,0.2);}
+.sol-cat{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:6px;}
+.sol-title{font-family:var(--font-body);font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.sol-desc{font-family:var(--font-body);font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.sol-code{background:#060e18;border:1px solid var(--border);border-radius:6px;padding:12px;font-family:var(--font-mono);font-size:10px;color:#39ff14;line-height:1.7;overflow-x:auto;max-height:140px;}
+
+/* CHAT */
+.chat-section{position:relative;z-index:1;max-width:800px;margin:0 auto 60px;padding:0 20px;}
+.chat-box{background:var(--card);border:1px solid var(--border-gold);border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,0.4);}
+.chat-head{
+  padding:14px 20px;background:rgba(198,168,92,0.06);
+  border-bottom:1px solid var(--border-gold);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.chat-title{font-family:var(--font-head);font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;}
+.chat-live{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9px;color:var(--success);letter-spacing:1px;}
+.chat-live-dot{width:6px;height:6px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.chat-online{font-family:var(--font-mono);font-size:9px;color:var(--muted);}
+.chat-msgs{height:300px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.chat-msgs::-webkit-scrollbar{width:4px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.msg{display:flex;align-items:flex-start;gap:10px;animation:msgIn .3s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg.mine{flex-direction:row-reverse;}
+.msg-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:10px;font-weight:700;flex-shrink:0;border:1px solid var(--border-gold);}
+.msg-body{max-width:70%;}
+.msg-name{font-family:var(--font-mono);font-size:9px;color:var(--gold);letter-spacing:1px;margin-bottom:3px;}
+.mine .msg-name{text-align:right;}
+.msg-text{
+  background:rgba(13,32,53,0.8);border:1px solid var(--border);
+  border-radius:10px;padding:8px 12px;font-size:13px;font-weight:500;line-height:1.5;
+}
+.mine .msg-text{background:rgba(0,191,255,0.1);border-color:rgba(0,191,255,0.2);}
+.msg-time{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:3px;}
+.mine .msg-time{text-align:right;}
+.chat-input-row{display:flex;gap:8px;padding:14px;border-top:1px solid var(--border);}
+.chat-input{
+  flex:1;background:rgba(6,14,24,0.8);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:13px;
+  padding:10px 14px;outline:none;transition:border-color .2s;
+}
+.chat-input:focus{border-color:rgba(0,191,255,0.3);}
+.chat-send{
+  background:linear-gradient(135deg,#00BFFF,#0077aa);border:none;
+  border-radius:8px;padding:10px 18px;color:#0B1C2D;font-family:var(--font-head);
+  font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:6px;
+}
+.chat-send:hover{box-shadow:0 0 20px rgba(0,191,255,0.3);}
+
+/* COLLAB BTN */
+.collab-banner{
+  position:relative;z-index:1;max-width:1200px;margin:0 auto 60px;padding:0 20px;
+}
+.collab-card{
+  background:linear-gradient(135deg,rgba(0,191,255,0.05),rgba(198,168,92,0.05));
+  border:1px solid var(--border-gold);border-radius:16px;padding:36px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  text-align:left;
+}
+.collab-text h3{font-family:var(--font-head);font-size:20px;font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:8px;}
+.collab-text p{font-size:14px;color:var(--muted);max-width:500px;line-height:1.6;}
+.collab-btn{
+  background:linear-gradient(135deg,var(--gold),#a07a2a);
+  border:none;color:#0B1C2D;padding:14px 32px;border-radius:30px;
+  font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:2px;
+  cursor:pointer;transition:all .3s;box-shadow:0 0 24px rgba(198,168,92,0.2);
+  white-space:nowrap;text-decoration:none;display:inline-block;
+}
+.collab-btn:hover{box-shadow:0 0 40px rgba(198,168,92,0.4);}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:960px;margin:0 auto;}
+@media(max-width:768px){.pricing-grid{grid-template-columns:1fr;}}
+.plan-card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:28px 22px;text-align:center;position:relative;overflow:hidden;transition:all .3s;
+}
+.plan-card.pop{border-color:var(--accent);box-shadow:0 0 40px rgba(0,191,255,0.12);}
+.plan-card.pop::before{content:'MOST POPULAR';position:absolute;top:14px;right:-32px;background:linear-gradient(135deg,#00BFFF,#0077aa);color:#0B1C2D;font-family:var(--font-mono);font-size:8px;letter-spacing:1px;padding:4px 50px;transform:rotate(35deg);}
+.plan-name{font-family:var(--font-head);font-size:18px;letter-spacing:4px;color:#fff;margin-bottom:4px;}
+.plan-tag{font-size:11px;color:var(--muted);margin-bottom:20px;}
+.plan-price-wrap{margin-bottom:20px;}
+.plan-cur{font-family:var(--font-mono);font-size:13px;color:var(--muted);vertical-align:top;line-height:3;}
+.plan-amt{font-family:var(--font-head);font-size:44px;letter-spacing:1px;color:#fff;}
+.plan-per{font-size:11px;color:var(--muted);}
+.plan-feats{list-style:none;text-align:left;margin-bottom:24px;}
+.plan-feats li{font-size:12px;color:var(--muted);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:8px;}
+.f-y{color:#39ff14;font-size:11px;}
+.f-n{color:var(--danger);font-size:11px;}
+.plan-btn{
+  width:100%;padding:11px;border-radius:8px;font-family:var(--font-body);
+  font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;
+  transition:all .2s;border:none;text-transform:uppercase;
+}
+.plan-btn.outline{background:transparent;border:1px solid var(--border);color:var(--muted);}
+.plan-btn.outline:hover{border-color:var(--accent);color:var(--accent);}
+.plan-btn.primary{background:linear-gradient(135deg,#00BFFF,#0077aa);color:#0B1C2D;}
+.plan-btn.primary:hover{box-shadow:0 0 24px rgba(0,191,255,0.4);}
+
+/* MODALS */
+.overlay{
+  position:fixed;inset:0;z-index:800;
+  background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--surface);border:1px solid var(--border-gold);
+  border-radius:16px;width:90%;max-width:460px;max-height:90vh;overflow-y:auto;
+  transform:scale(.95);transition:transform .3s;
+  box-shadow:0 40px 80px rgba(0,0,0,0.6),0 0 40px rgba(0,191,255,0.05);
+}
+.overlay.open .modal{transform:scale(1);}
+.modal-top-bar{height:4px;background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));background-size:200%;animation:shimmer 3s linear infinite;border-radius:16px 16px 0 0;}
+@keyframes shimmer{from{background-position:0%}to{background-position:200%}}
+.modal-head{padding:22px 22px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
+.modal-title{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--gold);letter-spacing:2px;}
+.modal-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.modal-close{background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{border-color:var(--accent);color:var(--accent);}
+.modal-body{padding:20px 22px 24px;}
+
+/* FORMS */
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.f-group{margin-bottom:14px;}
+.f-label{display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;}
+.f-input,.f-select{
+  width:100%;background:rgba(6,14,24,0.9);border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:13px;
+  padding:10px 12px;outline:none;transition:border-color .2s;
+}
+.f-input:focus,.f-select:focus{border-color:rgba(0,191,255,0.4);}
+.f-select option{background:var(--surface);}
+.f-submit{
+  width:100%;padding:12px;background:linear-gradient(135deg,#00a0d6,#006b99);
+  border:none;border-radius:8px;color:#fff;font-family:var(--font-head);
+  font-size:10px;font-weight:700;letter-spacing:3px;cursor:pointer;
+  box-shadow:0 0 20px rgba(0,191,255,0.2);transition:all .3s;margin-top:4px;
+}
+.f-submit:hover{box-shadow:0 0 35px rgba(0,191,255,0.4);}
+.tab-row{display:flex;border-bottom:1px solid var(--border);}
+.tab-btn{
+  flex:1;padding:12px;background:transparent;border:none;border-bottom:2px solid transparent;
+  color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;
+}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.pw-wrap{position:relative;}
+.pw-wrap .f-input{padding-right:40px;}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px;padding:4px;}
+.eye:hover{color:var(--accent);}
+.strength-bar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden;}
+.strength-fill{height:100%;border-radius:2px;transition:all .3s;width:0;}
+.f-check{display:flex;align-items:flex-start;gap:8px;margin:10px 0;}
+.f-check input{accent-color:var(--accent);margin-top:2px;}
+.f-check label{font-size:11px;color:var(--muted);line-height:1.5;}
+.f-check label a{color:var(--accent);text-decoration:none;}
+.divider{display:flex;align-items:center;gap:12px;margin:16px 0;}
+.div-line{flex:1;height:1px;background:var(--border);}
+.div-txt{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;}
+.plan-badge{display:flex;align-items:center;justify-content:space-between;background:rgba(0,191,255,0.06);border:1px solid rgba(0,191,255,0.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;}
+.pb-label{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;}
+.pb-name{font-family:var(--font-head);font-size:13px;color:var(--accent);}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:var(--card);border:1px solid rgba(0,191,255,0.3);border-radius:10px;
+  padding:12px 18px;font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--text);
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);transform:translateY(80px);opacity:0;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:8px;
+}
+#toast.show{transform:translateY(0);opacity:1;}
+
+/* FOOTER */
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:36px 20px 24px;text-align:center;}
+.footer-logo{font-family:var(--font-head);font-size:18px;color:var(--muted);letter-spacing:4px;margin-bottom:6px;}
+.footer-logo span{color:var(--accent);}
+.footer-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:4px;color:var(--muted);margin-bottom:18px;opacity:.5;}
+.footer-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+.footer-links a{font-size:11px;color:var(--muted);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--accent);}
+.footer-copy{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:rgba(148,163,184,0.3);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--primary);}
+::-webkit-scrollbar-thumb{background:var(--border-gold);border-radius:3px;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:12px 16px;}
+  .nav-links{display:none;}
+  .hero h1{font-size:28px;}
+}
+
+/* LOAD MORE */
+.load-more{
+  display:block;margin:24px auto 0;padding:10px 28px;
+  background:transparent;border:1px solid var(--border-gold);border-radius:30px;
+  color:var(--gold);font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:2px;
+  cursor:pointer;transition:all .3s;
+}
+.load-more:hover{background:rgba(198,168,92,0.08);box-shadow:0 0 20px rgba(198,168,92,0.15);}
+</style>
+</head>
+<body>
+
+<!-- RINGS -->
+<div class="rings-bg"><div class="ring-el"></div><div class="ring-el"></div><div class="ring-el"></div></div>
+
+<!-- WELCOME POPUP -->
+<div id="welcomePopup">
+  <div class="welcome-box">
+    <div class="welcome-logo-ring">
+      <img src="https://i.imgur.com/RcBmjWM.png" class="welcome-logo-img" alt="ANICADE TECH" onerror="this.style.display='none'">
+    </div>
+    <h2>WELCOME TO THE HUB</h2>
+    <p>Your all-in-one developer resource browser — APIs, AI tools, frameworks, and unlimited coding solutions. Built by ANICADE Tech™ from Zambia.</p>
+    <div class="welcome-progress"><div class="welcome-fill" id="wFill"></div></div>
+    <div class="welcome-timer" id="wTimer">AUTO-CLOSING IN 5s</div>
+    <button class="welcome-btn" onclick="closeWelcome()">EXPLORE THE HUB →</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">ANICADE<span>.TECH</span></a>
+  <div class="nav-links">
+    <a href="#resources">Resources</a>
+    <a href="#solutions">Solutions</a>
+    <a href="#pricing">Pricing</a>
+    <a href="collab.html">Collab Hub</a>
+    <a href="https://www.anicadetech.xyz" target="_blank">Main Site</a>
+    <button class="nav-btn" onclick="openModal('loginModal')">Sign In</button>
+    <a href="auth.html" class="nav-btn active">Profile</a>
+  </div>
+  <div class="nav-clock" id="navClock">--:--:-- --</div>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+<section class="hero">
+  <div class="hero-logo-wrap">
+    <div class="hero-logo-ring">
+      <img src="https://i.imgur.com/RcBmjWM.png" class="hero-logo-img" alt="ANICADE" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="hero-eyebrow">// ANICADE TECH™ — DEV RESOURCE BROWSER</div>
+  <h1><span class="gold">THE TECH</span><br><span class="blue">BROWSER</span></h1>
+  <div class="typewriter-wrap">
+    <span class="typewriter" id="typewriter"></span><span class="typewriter-cursor"></span>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <div class="search-bar">
+      <select class="search-cat" id="searchCat">
+        <option value="all">All Categories</option>
+        <option value="api">Free APIs</option>
+        <option value="ai">AI Tools</option>
+        <option value="framework">Frameworks</option>
+        <option value="database">Databases</option>
+        <option value="devtools">Dev Tools</option>
+        <option value="hosting">Hosting</option>
+        <option value="security">Security</option>
+        <option value="design">Design</option>
+        <option value="mobile">Mobile</option>
+        <option value="testing">Testing</option>
+        <option value="cms">CMS</option>
+        <option value="blockchain">Blockchain</option>
+      </select>
+      <input class="search-input" type="text" id="searchInput" placeholder="Search 1000+ APIs, AI tools, frameworks, solutions..." onkeydown="if(event.key==='Enter')doSearch()">
+      <button class="search-btn" onclick="doSearch()">SEARCH</button>
+    </div>
+    <div class="search-tags" style="margin-top:12px;">
+      <span class="tag" onclick="quickSearch('REST API')">REST API</span>
+      <span class="tag" onclick="quickSearch('AI coding')">AI Coding</span>
+      <span class="tag" onclick="quickSearch('auth')">Auth</span>
+      <span class="tag" onclick="quickSearch('database')">Database</span>
+      <span class="tag" onclick="quickSearch('payment')">Payments</span>
+      <span class="tag" onclick="quickSearch('deploy')">Deploy</span>
+      <span class="tag" onclick="quickSearch('CSS')">CSS</span>
+      <span class="tag" onclick="quickSearch('testing')">Testing</span>
+      <span class="tag" onclick="quickSearch('maps')">Maps</span>
+      <span class="tag" onclick="quickSearch('email')">Email</span>
+      <span class="tag" onclick="quickSearch('realtime')">Realtime</span>
+      <span class="tag" onclick="quickSearch('mobile')">Mobile</span>
+    </div>
+  </div>
+
+  <!-- SEARCH RESULTS -->
+  <div id="search-results">
+    <div class="result-header" id="resultHeader"></div>
+    <div class="result-grid" id="resultGrid"></div>
+  </div>
+</section>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-label">// 1000+ TOOLS — CLICK TO SEARCH</div>
+  <div class="marquee-row" id="mRow1"></div>
+  <div class="marquee-row rev" id="mRow2"></div>
+  <div class="marquee-row slow" id="mRow3"></div>
+  <div class="marquee-row rev" id="mRow4"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+<!-- RESOURCE SECTIONS -->
+<section class="section" id="resources">
+  <div class="sec-head">
+    <h2 class="sec-title">FREE <span class="blue">APIS</span></h2>
+    <div>
+      <div class="sec-count" id="apiCount"></div>
+      <div class="sec-meta">// CURATED · TESTED · READY</div>
+    </div>
+  </div>
+  <div class="cat-tabs" id="apiCatTabs"></div>
+  <div class="resource-grid" id="apiGrid"></div>
+  <button class="load-more" id="apiLoadMore" onclick="loadMoreAPI()">LOAD MORE APIS</button>
+</section>
+
+<section class="section">
+  <div class="sec-head">
+    <h2 class="sec-title">AI <span class="blue">TOOLS</span></h2>
+    <div>
+      <div class="sec-count" id="aiCount"></div>
+      <div class="sec-meta">// FOR ENGINEERS</div>
+    </div>
+  </div>
+  <div class="cat-tabs" id="aiCatTabs"></div>
+  <div class="resource-grid" id="aiGrid"></div>
+  <button class="load-more" id="aiLoadMore" onclick="loadMoreAI()">LOAD MORE AI TOOLS</button>
+</section>
+
+<section class="section">
+  <div class="sec-head">
+    <h2 class="sec-title">DEV <span class="gold">TOOLS</span></h2>
+    <div>
+      <div class="sec-count" id="devCount"></div>
+      <div class="sec-meta">// BUILD FASTER</div>
+    </div>
+  </div>
+  <div class="resource-grid" id="devGrid"></div>
+  <button class="load-more" id="devLoadMore" onclick="loadMoreDev()">LOAD MORE DEV TOOLS</button>
+</section>
+
+<!-- COLLAB BANNER -->
+</div>
+<div class="collab-banner">
+  <div class="collab-card">
+    <div class="collab-text">
+      <h3>COLLABORATION HUB</h3>
+      <p>Connect with developers worldwide. Share projects, collaborate in real-time, pair program, and build together. ANICADE Tech's developer collaboration space.</p>
+    </div>
+    <a href="collab.html" class="collab-btn">ENTER COLLAB HUB →</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- SOLUTIONS -->
+<section class="section" id="solutions">
+  <div class="sec-head">
+    <h2 class="sec-title">CODING <span class="blue">SOLUTIONS</span></h2>
+    <div>
+      <div class="sec-count" id="solCount"></div>
+      <div class="sec-meta">// UNLIMITED ANSWERS</div>
+    </div>
+  </div>
+  <div class="solutions-grid" id="solGrid"></div>
+  <button class="load-more" id="solLoadMore" onclick="loadMoreSol()">LOAD MORE SOLUTIONS</button>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="sec-head">
+    <h2 class="sec-title">SUBSCRIPTION <span class="gold">PLANS</span></h2>
+    <div class="sec-meta">// BY ANICADE TECH™</div>
+  </div>
+  <div class="pricing-grid">
+    <div class="plan-card">
+      <div class="plan-name">STARTER</div>
+      <div class="plan-tag">For solo devs exploring</div>
+      <div class="plan-price-wrap">
+        <span class="plan-cur">K</span><span class="plan-amt">0</span>
+        <div class="plan-per">forever free</div>
+      </div>
+      <ul class="plan-feats">
+        <li><span class="f-y">✓</span>50 searches / day</li>
+        <li><span class="f-y">✓</span>Public API directory</li>
+        <li><span class="f-y">✓</span>10 code solutions / day</li>
+        <li><span class="f-y">✓</span>Global chat access</li>
+        <li><span class="f-n">✗</span>AI-powered search</li>
+        <li><span class="f-n">✗</span>Download snippets</li>
+        <li><span class="f-n">✗</span>Collab Hub access</li>
+        <li><span class="f-n">✗</span>Priority support</li>
+      </ul>
+      <button class="plan-btn outline" onclick="openSubscribe('STARTER','K0')">GET STARTED</button>
+    </div>
+    <div class="plan-card pop">
+      <div class="plan-name">PRO</div>
+      <div class="plan-tag">For active devs & teams</div>
+      <div class="plan-price-wrap">
+        <span class="plan-cur">K</span><span class="plan-amt">149</span>
+        <div class="plan-per">per month</div>
+      </div>
+      <ul class="plan-feats">
+        <li><span class="f-y">✓</span>Unlimited searches</li>
+        <li><span class="f-y">✓</span>All API categories</li>
+        <li><span class="f-y">✓</span>Unlimited code solutions</li>
+        <li><span class="f-y">✓</span>AI-powered search</li>
+        <li><span class="f-y">✓</span>Download code snippets</li>
+        <li><span class="f-y">✓</span>Full Collab Hub access</li>
+        <li><span class="f-y">✓</span>WhatsApp support</li>
+        <li><span class="f-n">✗</span>Custom API integrations</li>
+      </ul>
+      <button class="plan-btn primary" onclick="openSubscribe('PRO','K149/mo')">SUBSCRIBE NOW</button>
+    </div>
+    <div class="plan-card">
+      <div class="plan-name">ELITE</div>
+      <div class="plan-tag">For agencies & engineers</div>
+      <div class="plan-price-wrap">
+        <span class="plan-cur">K</span><span class="plan-amt">399</span>
+        <div class="plan-per">per month</div>
+      </div>
+      <ul class="plan-feats">
+        <li><span class="f-y">✓</span>Everything in Pro</li>
+        <li><span class="f-y">✓</span>Custom API integrations</li>
+        <li><span class="f-y">✓</span>Team seats (up to 10)</li>
+        <li><span class="f-y">✓</span>Private solution library</li>
+        <li><span class="f-y">✓</span>Direct dev support</li>
+        <li><span class="f-y">✓</span>Early feature access</li>
+        <li><span class="f-y">✓</span>Agent commission 15%</li>
+        <li><span class="f-y">✓</span>Admin panel access</li>
+      </ul>
+      <button class="plan-btn primary" onclick="openSubscribe('ELITE','K399/mo')">GO ELITE</button>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- GLOBAL CHAT -->
+<div class="chat-section">
+  <div class="chat-box">
+    <div class="chat-head">
+      <div>
+        <div class="chat-title">// GLOBAL DEV CHAT</div>
+        <div class="chat-online" id="chatOnline">● 0 online</div>
+      </div>
+      <div class="chat-live"><div class="chat-live-dot"></div>LIVE</div>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" type="text" placeholder="Message the dev community..." maxlength="300" onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        SEND
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ANICADE<span>.TECH</span></div>
+  <div class="footer-tag">// KABWE, ZAMBIA · TECH BEYOND LIMITS</div>
+  <div class="footer-links">
+    <a href="https://www.anicadetech.xyz">Main Website</a>
+    <a href="auth.html">Account</a>
+    <a href="collab.html">Collab Hub</a>
+    <a href="#">Agent Programme</a>
+    <a href="https://wa.me/260777083995" target="_blank">WhatsApp</a>
+  </div>
+  <div class="footer-copy">© 2026 ANICADE TECH™. ALL RIGHTS RESERVED. BUILT IN ZAMBIA.</div>
+</footer>
+
+<!-- SUBSCRIBE MODAL -->
+<div class="overlay" id="subscribeModal">
+  <div class="modal">
+    <div class="modal-top-bar"></div>
+    <div class="modal-head">
+      <div><div class="modal-title">SUBSCRIBE</div><div class="modal-sub">Join the ANICADE Tech Browser</div></div>
+      <button class="modal-close" onclick="closeModal('subscribeModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="plan-badge"><span class="pb-label">SELECTED PLAN</span><span class="pb-name" id="planName">PRO</span><span class="pb-name" id="planPrice">K149/mo</span></div>
+      <div class="f-row">
+        <div class="f-group"><label class="f-label">First Name</label><input class="f-input" type="text" placeholder="Tresfor"></div>
+        <div class="f-group"><label class="f-label">Last Name</label><input class="f-input" type="text" placeholder="Zulu"></div>
+      </div>
+      <div class="f-group"><label class="f-label">Email Address</label><input class="f-input" type="email" placeholder="you@example.com"></div>
+      <div class="f-group"><label class="f-label">WhatsApp Number</label><input class="f-input" type="tel" placeholder="+260 777 000 000"></div>
+      <div class="f-row">
+        <div class="f-group">
+          <label class="f-label">Country</label>
+          <select class="f-select" id="subCountry" onchange="updateTimezone(this.value)"></select>
+        </div>
+        <div class="f-group"><label class="f-label">City</label><input class="f-input" type="text" placeholder="Kabwe"></div>
+      </div>
+      <div class="f-group">
+        <label class="f-label">Payment Method</label>
+        <select class="f-select">
+          <option>📱 MTN Mobile Money</option>
+          <option>📱 Airtel Money</option>
+          <option>💳 Bank Transfer</option>
+          <option>💳 Card (Visa/Mastercard)</option>
+          <option>💬 WhatsApp Arrangement</option>
+        </select>
+      </div>
+      <div class="f-check"><input type="checkbox" id="subTerms"><label for="subTerms">I agree to ANICADE Tech's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
+      <button class="f-submit" onclick="handleSubscribe()">CONFIRM SUBSCRIPTION →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="overlay" id="loginModal">
+  <div class="modal">
+    <div class="modal-top-bar"></div>
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('signin')">SIGN IN</button>
+      <button class="tab-btn" onclick="switchTab('signup')">CREATE ACCOUNT</button>
+    </div>
+    <!-- SIGN IN -->
+    <div class="tab-content active" id="tab-signin">
+      <div class="modal-head" style="border:none;padding-bottom:0">
+        <div><div class="modal-title">WELCOME BACK</div><div class="modal-sub">Access your ANICADE Tech Browser</div></div>
+        <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="f-group"><label class="f-label">Email Address</label><input class="f-input" type="email" placeholder="you@example.com" id="siEmail"></div>
+        <div class="f-group">
+          <label class="f-label">Password</label>
+          <div class="pw-wrap"><input class="f-input" type="password" placeholder="••••••••" id="siPass"><button class="eye" onclick="togglePwd('siPass',this)">👁</button></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin:-8px 0 14px">
+          <a href="#" style="font-family:var(--font-mono);font-size:9px;color:var(--accent);text-decoration:none;letter-spacing:1px;">FORGOT PASSWORD?</a>
+        </div>
+        <button class="f-submit" onclick="handleLogin()">SIGN IN →</button>
+        <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:14px;">No account? <a href="#" style="color:var(--accent);text-decoration:none;" onclick="switchTab('signup')">Create one free</a></p>
+        <p style="text-align:center;font-size:10px;color:var(--muted);margin-top:8px;font-family:var(--font-mono);">Or visit <a href="auth.html" style="color:var(--gold);text-decoration:none;">Full Auth Page</a> for profile management</p>
+      </div>
+    </div>
+    <!-- SIGN UP -->
+    <div class="tab-content" id="tab-signup">
+      <div class="modal-head" style="border:none;padding-bottom:0">
+        <div><div class="modal-title">JOIN THE HUB</div><div class="modal-sub">Create your ANICADE Tech account</div></div>
+        <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="f-row">
+          <div class="f-group"><label class="f-label">First Name</label><input class="f-input" type="text" placeholder="Tresfor"></div>
+          <div class="f-group"><label class="f-label">Last Name</label><input class="f-input" type="text" placeholder="Zulu"></div>
+        </div>
+        <div class="f-group"><label class="f-label">Email</label><input class="f-input" type="email" placeholder="you@example.com" id="suEmail"></div>
+        <div class="f-group">
+          <label class="f-label">Country</label>
+          <select class="f-select" id="suCountry" onchange="updateTimezone(this.value)"></select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Password</label>
+          <div class="pw-wrap"><input class="f-input" type="password" placeholder="Min 8 characters" id="suPass" oninput="checkStr(this)"><button class="eye" onclick="togglePwd('suPass',this)">👁</button></div>
+          <div class="strength-bar"><div class="strength-fill" id="strFill"></div></div>
+        </div>
+        <div class="f-check"><input type="checkbox" id="suTerms"><label for="suTerms">I agree to <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
+        <button class="f-submit" onclick="handleSignup()">CREATE ACCOUNT →</button>
+        <p style="text-align:center;font-size:10px;color:var(--muted);margin-top:10px;font-family:var(--font-mono);">Full profile setup at <a href="auth.html" style="color:var(--gold);text-decoration:none;">auth.html</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"><span id="toastIcon">✓</span><span id="toastMsg">Done!</span></div>
+
+<script>
+// ── COUNTRY DATA ──
+const COUNTRIES = [
+  {name:'🇿🇲 Zambia',tz:'Africa/Lusaka'},
+  {name:'🇿🇼 Zimbabwe',tz:'Africa/Harare'},
+  {name:'🇲🇼 Malawi',tz:'Africa/Blantyre'},
+  {name:'🇹🇿 Tanzania',tz:'Africa/Dar_es_Salaam'},
+  {name:'🇰🇪 Kenya',tz:'Africa/Nairobi'},
+  {name:'🇿🇦 South Africa',tz:'Africa/Johannesburg'},
+  {name:'🇧🇼 Botswana',tz:'Africa/Gaborone'},
+  {name:'🇳🇦 Namibia',tz:'Africa/Windhoek'},
+  {name:'🇲🇿 Mozambique',tz:'Africa/Maputo'},
+  {name:'🇺🇬 Uganda',tz:'Africa/Kampala'},
+  {name:'🇷🇼 Rwanda',tz:'Africa/Kigali'},
+  {name:'🇪🇹 Ethiopia',tz:'Africa/Addis_Ababa'},
+  {name:'🇬🇭 Ghana',tz:'Africa/Accra'},
+  {name:'🇳🇬 Nigeria',tz:'Africa/Lagos'},
+  {name:'🇪🇬 Egypt',tz:'Africa/Cairo'},
+  {name:'🇸🇳 Senegal',tz:'Africa/Dakar'},
+  {name:'🇹🇳 Tunisia',tz:'Africa/Tunis'},
+  {name:'🇺🇸 United States (ET)',tz:'America/New_York'},
+  {name:'🇺🇸 United States (PT)',tz:'America/Los_Angeles'},
+  {name:'🇬🇧 United Kingdom',tz:'Europe/London'},
+  {name:'🇨🇦 Canada',tz:'America/Toronto'},
+  {name:'🇩🇪 Germany',tz:'Europe/Berlin'},
+  {name:'🇫🇷 France',tz:'Europe/Paris'},
+  {name:'🇮🇳 India',tz:'Asia/Kolkata'},
+  {name:'🇨🇳 China',tz:'Asia/Shanghai'},
+  {name:'🇯🇵 Japan',tz:'Asia/Tokyo'},
+  {name:'🇦🇺 Australia',tz:'Australia/Sydney'},
+  {name:'🇧🇷 Brazil',tz:'America/Sao_Paulo'},
+  {name:'🌍 Other (UTC)',tz:'UTC'},
+];
+let currentTZ = 'Africa/Lusaka';
+
+function populateCountrySelects(){
+  ['subCountry','suCountry'].forEach(id => {
+    const sel = document.getElementById(id);
+    if(!sel) return;
+    COUNTRIES.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c.tz; o.textContent = c.name;
+      if(c.tz === 'Africa/Lusaka') o.selected = true;
+      sel.appendChild(o);
+    });
+  });
+}
+
+function updateTimezone(tz){
+  if(tz) currentTZ = tz;
+  updateClock();
+}
+
+function updateClock(){
+  const el = document.getElementById('navClock');
+  if(!el) return;
+  try{
+    const now = new Date();
+    const str = now.toLocaleTimeString('en-US',{timeZone:currentTZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+    const country = COUNTRIES.find(c=>c.tz===currentTZ);
+    const label = country ? country.name.split(' ')[1]||'LOCAL' : 'LOCAL';
+    el.textContent = str + ' · ' + label;
+  } catch(e){ el.textContent = new Date().toLocaleTimeString(); }
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── WELCOME POPUP ──
+const WELCOME_KEY = 'anicade_browser_welcomed';
+(function(){
+  const seen = localStorage.getItem(WELCOME_KEY);
+  if(seen){
+    document.getElementById('welcomePopup').style.display='none';
+  } else {
+    let secs = 5, fill = document.getElementById('wFill'), timer = document.getElementById('wTimer');
+    const iv = setInterval(()=>{
+      secs--;
+      fill.style.width = ((5-secs)/5*100)+'%';
+      timer.textContent = 'AUTO-CLOSING IN '+secs+'s';
+      if(secs<=0){ clearInterval(iv); closeWelcome(); }
+    }, 1000);
+  }
+})();
+function closeWelcome(){
+  localStorage.setItem(WELCOME_KEY,'1');
+  const p = document.getElementById('welcomePopup');
+  p.style.transition='opacity .5s'; p.style.opacity='0';
+  setTimeout(()=>p.style.display='none', 500);
+}
+
+// ── TYPEWRITER ──
+const TW_PHRASES = [
+  'Search 1,000+ APIs, AI tools & frameworks...',
+  'Find free REST APIs for your next project...',
+  'Discover AI tools that write code for you...',
+  'Explore unlimited coding solutions & snippets...',
+  'Build faster with curated developer resources...',
+  'Connect with the global dev community...',
+  'From Zambia, for the world — ANICADE Tech™',
+];
+let twIdx=0, twChar=0, twDeleting=false, twEl=document.getElementById('typewriter');
+function typeLoop(){
+  const phrase = TW_PHRASES[twIdx];
+  if(twDeleting){ twChar--; } else { twChar++; }
+  twEl.textContent = phrase.substring(0,twChar);
+  if(!twDeleting && twChar===phrase.length){ setTimeout(()=>twDeleting=true, 2000); }
+  if(twDeleting && twChar===0){ twDeleting=false; twIdx=(twIdx+1)%TW_PHRASES.length; }
+  setTimeout(typeLoop, twDeleting?40:80);
+}
+setTimeout(typeLoop, 800);
+
+// ── RESOURCE DATA — 100+ per category ──
+// SVG icons as inline strings
+const ICONS = {
+  api: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00BFFF" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+  ai: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00BFFF" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>`,
+  dev: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C6A85C" stroke-width="1.8"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+  db: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#39ff14" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
+  host: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>`,
+  sec: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  design: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+  mobile: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00BFFF" stroke-width="1.8"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
+  test: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#39ff14" stroke-width="1.8"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v11m0 0H5m4 0h10m0-11v11m0 0v6a2 2 0 01-2 2H7a2 2 0 01-2-2v-6"/></svg>`,
+};
+
+function makeIcon(type){
+  return ICONS[type] || ICONS.api;
+}
+
+// Generate large datasets
+function mkAPI(i){
+  const apis = [
+    {t:'OpenWeatherMap',d:'Real-time weather data, forecasts & historical data for any global location.',b:'free',tags:['REST','Geo','JSON'],u:'https://openweathermap.org/api',cat:'Weather'},
+    {t:'REST Countries',d:'Detailed info on every country — flags, currencies, languages, capitals.',b:'free',tags:['REST','Data','JSON'],u:'https://restcountries.com',cat:'Data'},
+    {t:'NewsAPI',d:'Breaking news from 80,000+ sources. Search by keyword, topic or source.',b:'free',tags:['REST','News','JSON'],u:'https://newsapi.org',cat:'News'},
+    {t:'TMDB API',d:'Comprehensive movie, TV and cast database for entertainment apps.',b:'free',tags:['REST','Media','JSON'],u:'https://developers.themoviedb.org',cat:'Media'},
+    {t:'Open Library',d:'Millions of books, authors and cover images from the Internet Archive.',b:'free',tags:['REST','Books','OSS'],u:'https://openlibrary.org/developers',cat:'Books'},
+    {t:'Exchange Rates API',d:'Real-time and historical foreign exchange rates for 170 currencies.',b:'free',tags:['Finance','REST','JSON'],u:'https://exchangeratesapi.io',cat:'Finance'},
+    {t:'RAWG Games DB',d:"World's largest video game database. 500k+ games, ratings, platforms.",b:'free',tags:['Gaming','REST','JSON'],u:'https://rawg.io/apidocs',cat:'Gaming'},
+    {t:'OpenStreetMap',d:'Free editable world map. Use Overpass API or Nominatim for data.',b:'free',tags:['Geo','Maps','OSS'],u:'https://wiki.openstreetmap.org/wiki/API',cat:'Maps'},
+    {t:'CoinGecko',d:'Cryptocurrency market data. Prices, charts, volumes for 13k+ coins.',b:'free',tags:['Crypto','Finance','REST'],u:'https://coingecko.com/en/api',cat:'Finance'},
+    {t:'TheAudioDB',d:'Music data — albums, artists, tracks, lyrics and artwork.',b:'free',tags:['Music','REST','JSON'],u:'https://theaudiodb.com/api_guide.php',cat:'Music'},
+    {t:'Poke API',d:'All Pokémon data. Perfect for learning REST APIs.',b:'free',tags:['REST','Game','JSON'],u:'https://pokeapi.co',cat:'Gaming'},
+    {t:'NASA Open APIs',d:'Space imagery, planetary data, Mars rover photos, APOD and more.',b:'free',tags:['Space','REST','JSON'],u:'https://api.nasa.gov',cat:'Science'},
+    {t:'JSONPlaceholder',d:'Free fake REST API for testing and prototyping. No registration needed.',b:'free',tags:['REST','Test','JSON'],u:'https://jsonplaceholder.typicode.com',cat:'Dev'},
+    {t:'Random User API',d:'Generate random user data. Avatars, names, emails, addresses.',b:'free',tags:['REST','Fake','JSON'],u:'https://randomuser.me',cat:'Dev'},
+    {t:'IP-API',d:'IP address geolocation. Get country, city, ISP for any IP.',b:'free',tags:['Geo','REST','JSON'],u:'https://ip-api.com',cat:'Geo'},
+    {t:'Quotable API',d:'Free quotations API with authors and tags. 1,500+ quotes.',b:'free',tags:['REST','Text','JSON'],u:'https://quotable.io',cat:'Text'},
+    {t:'Open Trivia DB',d:'Free to use, user-contributed trivia question database.',b:'free',tags:['REST','Quiz','JSON'],u:'https://opentdb.com/api_config.php',cat:'Games'},
+    {t:'JokeAPI',d:'Programming jokes, puns and dad jokes API with filtering support.',b:'free',tags:['REST','Fun','JSON'],u:'https://jokeapi.dev',cat:'Fun'},
+    {t:'Numbers API',d:'Interesting facts about numbers, dates and math.',b:'free',tags:['REST','Data','JSON'],u:'http://numbersapi.com',cat:'Data'},
+    {t:'Reqres',d:'Hosted REST API for front-end development. Mock user endpoints.',b:'free',tags:['REST','Mock','JSON'],u:'https://reqres.in',cat:'Dev'},
+    {t:'Dog CEO API',d:'Random dog images API. 20,000+ images from 120 breeds.',b:'free',tags:['REST','Images','Fun'],u:'https://dog.ceo/dog-api',cat:'Fun'},
+    {t:'Cat Facts API',d:'Random cat facts for your apps. Simple GET request.',b:'free',tags:['REST','Fun','JSON'],u:'https://catfact.ninja',cat:'Fun'},
+    {t:'Agify.io',d:'Predict age from a first name. Simple prediction API.',b:'free',tags:['REST','ML','JSON'],u:'https://agify.io',cat:'Data'},
+    {t:'Genderize.io',d:'Predict gender from first name with probability.',b:'free',tags:['REST','ML','JSON'],u:'https://genderize.io',cat:'Data'},
+    {t:'Nationalize.io',d:'Predict the nationality of a person based on their name.',b:'free',tags:['REST','ML','JSON'],u:'https://nationalize.io',cat:'Data'},
+    {t:'Open Food Facts',d:'Massive open database of food products with nutrients data.',b:'free',tags:['REST','Food','OSS'],u:'https://world.openfoodfacts.org/data',cat:'Health'},
+    {t:'DictionaryAPI',d:'English dictionary definitions, phonetics and examples.',b:'free',tags:['REST','Language','JSON'],u:'https://dictionaryapi.dev',cat:'Language'},
+    {t:'Open Banking',d:'UK Open Banking APIs for account data and payments.',b:'free',tags:['Finance','Banking','REST'],u:'https://www.openbanking.org.uk',cat:'Finance'},
+    {t:'Frankfurter',d:'Open source currency data API. Historical rates since 1999.',b:'free',tags:['Finance','OSS','REST'],u:'https://www.frankfurter.app',cat:'Finance'},
+    {t:'HackerNews API',d:'Official Y Combinator Hacker News data via Firebase.',b:'free',tags:['REST','News','JSON'],u:'https://github.com/HackerNews/API',cat:'News'},
+    {t:'Reddit API',d:'Access Reddit posts, comments, users and subreddit data.',b:'free',tags:['REST','Social','JSON'],u:'https://www.reddit.com/dev/api',cat:'Social'},
+    {t:'GitHub API',d:'Access repos, commits, issues, users and organisations.',b:'free',tags:['REST','Dev','JSON'],u:'https://docs.github.com/en/rest',cat:'Dev'},
+    {t:'GitLab API',d:"GitLab's comprehensive REST and GraphQL API for DevOps.",b:'free',tags:['REST','DevOps','JSON'],u:'https://docs.gitlab.com/ee/api',cat:'Dev'},
+    {t:'Spotify Web API',d:'Music metadata, playlists, user data and playback control.',b:'free',tags:['Music','REST','OAuth'],u:'https://developer.spotify.com/documentation/web-api',cat:'Music'},
+    {t:'Twitch API',d:'Streams, games, users and clip data from Twitch platform.',b:'free',tags:['Gaming','REST','OAuth'],u:'https://dev.twitch.tv/docs/api',cat:'Gaming'},
+    {t:'YouTube Data API',d:'Search videos, manage channels, playlists and subscriptions.',b:'paid',tags:['Video','REST','Google'],u:'https://developers.google.com/youtube/v3',cat:'Media'},
+    {t:'Twitter/X API',d:'Post tweets, read timelines, search and manage Twitter accounts.',b:'paid',tags:['Social','REST','OAuth'],u:'https://developer.twitter.com',cat:'Social'},
+    {t:'Discord API',d:'Build bots and apps for Discord servers. Webhooks and OAuth.',b:'free',tags:['Social','Bot','REST'],u:'https://discord.com/developers/docs',cat:'Social'},
+    {t:'Slack API',d:'Send messages, build Slack bots and workspace automation.',b:'free',tags:['Social','Bot','REST'],u:'https://api.slack.com',cat:'Social'},
+    {t:'SendGrid API',d:'Transactional email delivery with analytics and templates.',b:'paid',tags:['Email','REST','SMTP'],u:'https://sendgrid.com/docs/api-reference',cat:'Email'},
+    {t:'Mailgun API',d:'Email sending, tracking and validation API for developers.',b:'paid',tags:['Email','REST','SMTP'],u:'https://documentation.mailgun.com',cat:'Email'},
+    {t:'Resend API',d:'Modern email API built for developers. React Email templates.',b:'free',tags:['Email','REST','React'],u:'https://resend.com',cat:'Email'},
+    {t:'Vonage SMS',d:'SMS, voice and video communication APIs.',b:'paid',tags:['SMS','Voice','REST'],u:'https://developer.vonage.com',cat:'SMS'},
+    {t:'Twilio API',d:'Programmable messaging, voice, WhatsApp and email.',b:'paid',tags:['SMS','Voice','REST'],u:'https://www.twilio.com/docs',cat:'SMS'},
+    {t:'OneSignal API',d:'Push notifications for web and mobile. Free for up to 10k subs.',b:'free',tags:['Push','REST','Mobile'],u:'https://documentation.onesignal.com/reference',cat:'Push'},
+    {t:'Firebase FCM',d:'Google Firebase Cloud Messaging for push notifications.',b:'free',tags:['Push','Google','Mobile'],u:'https://firebase.google.com/docs/cloud-messaging',cat:'Push'},
+    {t:'Mapbox API',d:'Custom maps, geocoding, navigation and data visualisation.',b:'paid',tags:['Maps','Geo','REST'],u:'https://docs.mapbox.com/api',cat:'Maps'},
+    {t:'HERE Maps API',d:'Geocoding, routing, traffic and location APIs from HERE.',b:'paid',tags:['Maps','Geo','REST'],u:'https://developer.here.com/documentation',cat:'Maps'},
+    {t:'Stripe API',d:'Payment processing for online businesses. Subscriptions, invoices.',b:'paid',tags:['Payments','REST','Finance'],u:'https://stripe.com/docs/api',cat:'Payments'},
+    {t:'PayPal API',d:'Accept payments worldwide. REST SDK for all major platforms.',b:'paid',tags:['Payments','REST','Finance'],u:'https://developer.paypal.com/api',cat:'Payments'},
+    {t:'Flutterwave API',d:'African payment gateway. Mobile money, cards & bank transfers.',b:'paid',tags:['Payments','Africa','REST'],u:'https://developer.flutterwave.com',cat:'Payments'},
+    {t:'Paystack API',d:'Nigerian payment processing. Cards, bank and USSD payments.',b:'paid',tags:['Payments','Africa','REST'],u:'https://paystack.com/docs/api',cat:'Payments'},
+    {t:'DPO Pay API',d:'Pan-African payment gateway supporting 54 African countries.',b:'paid',tags:['Payments','Africa','REST'],u:'https://developer.dpogroup.com',cat:'Payments'},
+    {t:'Auth0 API',d:'Authentication and authorization as a service.',b:'paid',tags:['Auth','OAuth','REST'],u:'https://auth0.com/docs/api',cat:'Auth'},
+    {t:'Clerk API',d:'Modern authentication with prebuilt React components.',b:'free',tags:['Auth','React','REST'],u:'https://clerk.com/docs',cat:'Auth'},
+    {t:'Supabase Auth',d:'Open source auth with magic links, OAuth and social login.',b:'free',tags:['Auth','OSS','REST'],u:'https://supabase.com/docs/guides/auth',cat:'Auth'},
+    {t:'Google OAuth2',d:'Sign in with Google. OpenID Connect authentication.',b:'free',tags:['Auth','Google','OAuth'],u:'https://developers.google.com/identity',cat:'Auth'},
+    {t:'Firebase Auth',d:'Multi-provider authentication. Email, phone, social login.',b:'free',tags:['Auth','Google','Mobile'],u:'https://firebase.google.com/docs/auth',cat:'Auth'},
+    {t:'Cloudinary API',d:'Image and video upload, transformation and CDN delivery.',b:'free',tags:['Media','CDN','REST'],u:'https://cloudinary.com/documentation',cat:'Media'},
+    {t:'Imgix API',d:'Real-time image processing and optimisation via URL params.',b:'paid',tags:['Images','CDN','REST'],u:'https://www.imgix.com/solutions/image-api',cat:'Media'},
+    {t:'Pexels API',d:'Free stock photos and videos. 3 million+ high-quality assets.',b:'free',tags:['Images','REST','Media'],u:'https://www.pexels.com/api',cat:'Media'},
+    {t:'Unsplash API',d:'Beautiful free photos from thousands of professional photographers.',b:'free',tags:['Images','REST','Media'],u:'https://unsplash.com/developers',cat:'Media'},
+    {t:'Pixabay API',d:'Free stock images, illustrations and video clips.',b:'free',tags:['Images','REST','Media'],u:'https://pixabay.com/api/docs',cat:'Media'},
+    {t:'Giphy API',d:'Search and embed GIFs, stickers and clips from Giphy.',b:'free',tags:['GIFs','REST','Media'],u:'https://developers.giphy.com',cat:'Media'},
+    {t:'Open Graph API',d:"Fetch website metadata, OG tags and preview data for any URL.",b:'free',tags:['REST','Metadata','JSON'],u:'https://www.opengraph.io',cat:'Dev'},
+    {t:'ipify API',d:'Simple public IP address API. Just one GET request.',b:'free',tags:['REST','Network','JSON'],u:'https://www.ipify.org',cat:'Network'},
+    {t:'Shodan API',d:'Search engine for internet-connected devices.',b:'paid',tags:['Security','Network','REST'],u:'https://developer.shodan.io',cat:'Security'},
+    {t:'Have I Been Pwned',d:'Check if an email or password has been in a data breach.',b:'free',tags:['Security','REST','JSON'],u:'https://haveibeenpwned.com/API/v3',cat:'Security'},
+    {t:'VirusTotal API',d:'Scan files and URLs for malware using multiple antivirus engines.',b:'free',tags:['Security','REST','JSON'],u:'https://developers.virustotal.com',cat:'Security'},
+    {t:'URLScan.io',d:'Website scanner. Analyse and scan URLs for phishing and malware.',b:'free',tags:['Security','REST','JSON'],u:'https://urlscan.io/docs/api',cat:'Security'},
+    {t:'Google Safe Browse',d:'Check URLs against Google Safe Browsing threat lists.',b:'free',tags:['Security','REST','Google'],u:'https://developers.google.com/safe-browsing',cat:'Security'},
+    {t:'Abstract API',d:'Collection of 20+ APIs — email validation, IP, holidays.',b:'free',tags:['REST','Multi','JSON'],u:'https://www.abstractapi.com',cat:'Utilities'},
+    {t:'Hunter.io API',d:'Find and verify email addresses. Domain search and verification.',b:'paid',tags:['Email','REST','Business'],u:'https://hunter.io/api-documentation/v2',cat:'Email'},
+    {t:'ZeroBounce API',d:'Email validation API. Detect invalid, disposable and spam emails.',b:'paid',tags:['Email','REST','Validation'],u:'https://www.zerobounce.net/docs',cat:'Email'},
+    {t:'Clearbit API',d:'Company and person data enrichment via email or domain.',b:'paid',tags:['Business','REST','Data'],u:'https://clearbit.com/docs',cat:'Business'},
+    {t:'Algolia API',d:'Instant search API. Typo tolerance, filtering and analytics.',b:'paid',tags:['Search','REST','UI'],u:'https://www.algolia.com/doc',cat:'Search'},
+    {t:'Elasticsearch API',d:'Distributed search and analytics engine REST API.',b:'free',tags:['Search','REST','OSS'],u:'https://www.elastic.co/guide/en/elasticsearch/reference',cat:'Search'},
+    {t:'Meilisearch API',d:'Blazing fast open-source search API with instant results.',b:'free',tags:['Search','REST','OSS'],u:'https://www.meilisearch.com/docs',cat:'Search'},
+    {t:'Typesense API',d:'Fast, typo-tolerant open-source search engine.',b:'free',tags:['Search','REST','OSS'],u:'https://typesense.org/docs',cat:'Search'},
+    {t:'OpenAI API',d:'GPT-4, DALL-E, Whisper. Text, image and audio generation.',b:'paid',tags:['AI','REST','GPT'],u:'https://platform.openai.com/docs',cat:'AI'},
+    {t:'Google Translate',d:'Language translation API. 100+ languages, neural MT.',b:'paid',tags:['Language','REST','Google'],u:'https://cloud.google.com/translate/docs',cat:'Language'},
+    {t:'DeepL API',d:'High-quality machine translation API. More accurate than Google for EU langs.',b:'paid',tags:['Language','REST','NLP'],u:'https://www.deepl.com/docs-api',cat:'Language'},
+    {t:'LibreTranslate',d:'Open source machine translation API. Self-hostable.',b:'free',tags:['Language','OSS','REST'],u:'https://libretranslate.com',cat:'Language'},
+    {t:'Text Razor API',d:'NLP API for entity extraction, categorisation and relationship analysis.',b:'paid',tags:['NLP','REST','AI'],u:'https://www.textrazor.com/docs',cat:'NLP'},
+    {t:'Perspective API',d:"Google's API to detect toxic comments and harmful content.",b:'free',tags:['NLP','Safety','REST'],u:'https://perspectiveapi.com',cat:'NLP'},
+    {t:'AssemblyAI',d:'Transcribe audio and video. Speaker diarisation and sentiment.',b:'paid',tags:['Audio','AI','REST'],u:'https://www.assemblyai.com/docs',cat:'Audio'},
+    {t:'Rev.ai API',d:'Accurate speech recognition and transcription API.',b:'paid',tags:['Audio','AI','REST'],u:'https://docs.rev.ai/api/asynchronous',cat:'Audio'},
+    {t:'ElevenLabs API',d:'Realistic AI text-to-speech with voice cloning.',b:'paid',tags:['Audio','AI','TTS'],u:'https://docs.elevenlabs.io/api-reference',cat:'Audio'},
+    {t:'Stability AI',d:'Stable Diffusion image generation via REST API.',b:'paid',tags:['Images','AI','REST'],u:'https://platform.stability.ai/docs/api-reference',cat:'Images'},
+    {t:'Replicate API',d:'Run open-source ML models via API. Images, video, audio, code.',b:'paid',tags:['AI','REST','ML'],u:'https://replicate.com/docs/reference/http',cat:'AI'},
+    {t:'Hugging Face API',d:'Inference API for thousands of open-source ML models.',b:'free',tags:['AI','REST','ML'],u:'https://huggingface.co/docs/api-inference',cat:'AI'},
+    {t:'Together AI API',d:'Fast inference for Llama, Mistral and 100+ open models.',b:'paid',tags:['AI','REST','LLM'],u:'https://docs.together.ai',cat:'AI'},
+    {t:'Mistral AI API',d:'Fast, efficient open-weight language models via API.',b:'paid',tags:['AI','REST','LLM'],u:'https://docs.mistral.ai',cat:'AI'},
+    {t:'Anthropic API',d:'Claude 3 — advanced AI for code, writing and analysis.',b:'paid',tags:['AI','REST','LLM'],u:'https://docs.anthropic.com',cat:'AI'},
+    {t:'Cohere API',d:'NLP API. Embeddings, classification and generation.',b:'paid',tags:['AI','NLP','REST'],u:'https://docs.cohere.com',cat:'AI'},
+    {t:'Groq API',d:'Ultra-fast LLM inference. Llama 3, Mixtral at record speeds.',b:'free',tags:['AI','REST','Fast'],u:'https://console.groq.com/docs',cat:'AI'},
+    {t:'Fireworks AI',d:'Fastest open-source model serving. Llama, Mistral, CodeLlama.',b:'paid',tags:['AI','REST','LLM'],u:'https://readme.fireworks.ai',cat:'AI'},
+    {t:'Scale AI API',d:'Data labeling, evaluation and fine-tuning for AI models.',b:'paid',tags:['AI','REST','Data'],u:'https://docs.scale.com',cat:'AI'},
+    {t:'WolframAlpha API',d:'Computational knowledge engine. Math, science, data queries.',b:'paid',tags:['Science','Math','REST'],u:'https://products.wolframalpha.com/api',cat:'Science'},
+    {t:'Open Calais',d:'Entity extraction, categorisation and linking from text.',b:'free',tags:['NLP','REST','Data'],u:'https://developers.thomsonreuters.com/open-calais',cat:'NLP'},
+    {t:'Nutritionix API',d:'Food nutrition data and restaurant menu tracking.',b:'paid',tags:['Health','Food','REST'],u:'https://developer.nutritionix.com',cat:'Health'},
+    {t:'Edamam Recipe',d:'Recipe search, nutrition analysis and food database.',b:'free',tags:['Food','REST','JSON'],u:'https://developer.edamam.com/edamam-recipe-api',cat:'Food'},
+    {t:'Spoonacular',d:'Recipe, food and nutrition API. 365,000+ recipes.',b:'free',tags:['Food','REST','JSON'],u:'https://spoonacular.com/food-api',cat:'Food'},
+    {t:'Open Library Search',d:'Search millions of books by title, author or subject.',b:'free',tags:['Books','REST','OSS'],u:'https://openlibrary.org/dev/docs/api',cat:'Books'},
+    {t:'Google Books API',d:'Search and preview books, access Google Play Books.',b:'free',tags:['Books','REST','Google'],u:'https://developers.google.com/books',cat:'Books'},
+    {t:'arXiv API',d:'Access scientific preprints in physics, math, CS and more.',b:'free',tags:['Science','REST','Papers'],u:'https://arxiv.org/help/api',cat:'Science'},
+    {t:'PubMed API',d:'Access 35M+ biomedical literature citations and abstracts.',b:'free',tags:['Science','Medical','REST'],u:'https://www.ncbi.nlm.nih.gov/home/develop/api',cat:'Science'},
+    {t:'Open Data Soft',d:'1000+ open datasets from governments and organisations.',b:'free',tags:['Data','REST','Gov'],u:'https://opendata.eu/en',cat:'Data'},
+    {t:'World Bank API',d:'Global development data — economic indicators, statistics.',b:'free',tags:['Data','Gov','REST'],u:'https://datahelpdesk.worldbank.org/knowledgebase/topics/125589',cat:'Data'},
+    {t:'UN Data API',d:'United Nations statistical databases and indicators.',b:'free',tags:['Data','Gov','REST'],u:'https://data.un.org/Host.aspx?Content=API',cat:'Data'},
+  ];
+  return apis;
+}
+
+function mkAI(){
+  return [
+    {t:'Claude (Anthropic)',d:'Advanced AI for coding, writing, analysis and reasoning. Best for dev assistance.',b:'ai',tags:['LLM','API','Code'],u:'https://anthropic.com',cat:'LLMs'},
+    {t:'ChatGPT (OpenAI)',d:'GPT-4o — multimodal AI for text, images and code generation.',b:'ai',tags:['LLM','API','GPT'],u:'https://openai.com',cat:'LLMs'},
+    {t:'Gemini (Google)',d:'Google Gemini Ultra — multimodal reasoning across text, code, images.',b:'ai',tags:['LLM','Google','Multi'],u:'https://gemini.google.com',cat:'LLMs'},
+    {t:'Groq',d:'Fastest LLM inference. Run Llama 3 at 800 tokens/sec. Free tier.',b:'ai',tags:['LLM','Fast','API'],u:'https://groq.com',cat:'LLMs'},
+    {t:'Mistral AI',d:'European open-weight models. Mixtral 8x22B for code and reasoning.',b:'ai',tags:['LLM','OSS','API'],u:'https://mistral.ai',cat:'LLMs'},
+    {t:'Llama 3 (Meta)',d:'Open-source 70B parameter model. Run locally or via API.',b:'ai',tags:['LLM','OSS','Meta'],u:'https://llama.meta.com',cat:'LLMs'},
+    {t:'Ollama',d:'Run LLMs locally. No API key. Llama, Mistral, Gemma, Code Llama.',b:'ai',tags:['Local','LLM','OSS'],u:'https://ollama.ai',cat:'Local AI'},
+    {t:'LM Studio',d:'Run local LLMs with GUI. OpenAI-compatible local server.',b:'ai',tags:['Local','LLM','GUI'],u:'https://lmstudio.ai',cat:'Local AI'},
+    {t:'Jan.ai',d:'Open source ChatGPT alternative that runs 100% offline.',b:'ai',tags:['Local','LLM','OSS'],u:'https://jan.ai',cat:'Local AI'},
+    {t:'Cursor IDE',d:'AI-powered code editor. Autocomplete, chat and codebase Q&A.',b:'ai',tags:['IDE','Code','GPT'],u:'https://cursor.sh',cat:'Coding'},
+    {t:'GitHub Copilot',d:"Microsoft's AI pair programmer. Context-aware code suggestions.",b:'ai',tags:['IDE','Code','GitHub'],u:'https://github.com/features/copilot',cat:'Coding'},
+    {t:'Codeium',d:'Free AI code completion. 70+ languages and 40+ editors.',b:'ai',tags:['IDE','Code','Free'],u:'https://codeium.com',cat:'Coding'},
+    {t:'Tabnine',d:'AI code completion trained on your codebase. Privacy-first.',b:'ai',tags:['IDE','Code','Privacy'],u:'https://tabnine.com',cat:'Coding'},
+    {t:'Amazon CodeWhisperer',d:'AWS AI coding assistant. Optimised for AWS services.',b:'ai',tags:['IDE','Code','AWS'],u:'https://aws.amazon.com/codewhisperer',cat:'Coding'},
+    {t:'Replit Ghostwriter',d:"Replit's AI pair programmer. Explain, refactor and generate code.",b:'ai',tags:['IDE','Code','Web'],u:'https://replit.com/ghostwriter',cat:'Coding'},
+    {t:'Phind',d:'AI-powered search for developers. Code-focused answers.',b:'ai',tags:['Search','Code','LLM'],u:'https://phind.com',cat:'Search'},
+    {t:'Perplexity AI',d:'AI search engine. Real-time answers with source citations.',b:'ai',tags:['Search','LLM','Web'],u:'https://perplexity.ai',cat:'Search'},
+    {t:'Hugging Face',d:'Model hub with 500k+ ML models. Inference API and Spaces.',b:'ai',tags:['OSS','Models','ML'],u:'https://huggingface.co',cat:'Models'},
+    {t:'Replicate',d:'Run open-source models via simple API. Images, audio, video.',b:'ai',tags:['API','Images','ML'],u:'https://replicate.com',cat:'Models'},
+    {t:'Together AI',d:'Deploy and run open models. Fine-tuning and inference.',b:'ai',tags:['API','LLM','Fine-tune'],u:'https://together.ai',cat:'Models'},
+    {t:'Stable Diffusion',d:'Open source text-to-image model. Run locally or via API.',b:'ai',tags:['Images','OSS','Diffusion'],u:'https://stability.ai',cat:'Image Gen'},
+    {t:'Midjourney',d:'AI image generation. Stunning artistic quality from prompts.',b:'ai',tags:['Images','Art','Discord'],u:'https://midjourney.com',cat:'Image Gen'},
+    {t:'DALL-E 3',d:"OpenAI's image generation integrated into ChatGPT and API.",b:'ai',tags:['Images','OpenAI','API'],u:'https://openai.com/dall-e-3',cat:'Image Gen'},
+    {t:'Adobe Firefly',d:'Adobe AI for images, vectors and text effects.',b:'ai',tags:['Images','Design','Adobe'],u:'https://www.adobe.com/products/firefly.html',cat:'Image Gen'},
+    {t:'Ideogram AI',d:'AI image generator with excellent text rendering in images.',b:'ai',tags:['Images','Text','AI'],u:'https://ideogram.ai',cat:'Image Gen'},
+    {t:'Leonardo AI',d:'AI art and asset generation for creative projects.',b:'ai',tags:['Images','Art','AI'],u:'https://leonardo.ai',cat:'Image Gen'},
+    {t:'Runway ML',d:'AI video generation, editing and creative tools.',b:'ai',tags:['Video','AI','Creative'],u:'https://runwayml.com',cat:'Video AI'},
+    {t:'Pika Labs',d:'AI video generation from text and images.',b:'ai',tags:['Video','AI','Generate'],u:'https://pika.art',cat:'Video AI'},
+    {t:'ElevenLabs',d:'Realistic AI voice cloning and text-to-speech.',b:'ai',tags:['Audio','TTS','Clone'],u:'https://elevenlabs.io',cat:'Audio AI'},
+    {t:'Whisper (OpenAI)',d:'Open source speech recognition. 99 languages.',b:'ai',tags:['Audio','STT','OSS'],u:'https://openai.com/research/whisper',cat:'Audio AI'},
+    {t:'AssemblyAI',d:'Speech-to-text, speaker diarisation and audio intelligence.',b:'ai',tags:['Audio','STT','API'],u:'https://assemblyai.com',cat:'Audio AI'},
+    {t:'Suno AI',d:'Generate complete songs with AI. Text to music.',b:'ai',tags:['Music','AI','Generate'],u:'https://suno.ai',cat:'Music AI'},
+    {t:'Udio',d:'AI music generation. Professional quality from text prompts.',b:'ai',tags:['Music','AI','Generate'],u:'https://udio.com',cat:'Music AI'},
+    {t:'Cohere',d:'Embed, classify and generate text. Enterprise NLP API.',b:'ai',tags:['NLP','API','Embed'],u:'https://cohere.com',cat:'NLP'},
+    {t:'Langchain',d:'Framework for building LLM applications. Chains, agents, RAG.',b:'ai',tags:['Framework','LLM','Python'],u:'https://langchain.com',cat:'Frameworks'},
+    {t:'LlamaIndex',d:'Data framework for LLM apps. Connect to any data source.',b:'ai',tags:['Framework','LLM','Python'],u:'https://llamaindex.ai',cat:'Frameworks'},
+    {t:'AutoGen (Microsoft)',d:'Multi-agent conversation framework for autonomous AI.',b:'ai',tags:['Agents','LLM','Python'],u:'https://microsoft.github.io/autogen',cat:'Agents'},
+    {t:'CrewAI',d:'Framework for orchestrating role-playing AI agents.',b:'ai',tags:['Agents','LLM','Python'],u:'https://crewai.com',cat:'Agents'},
+    {t:'Flowise',d:'Open source visual LLM flow builder. Drag-and-drop AI apps.',b:'ai',tags:['NoCode','LLM','OSS'],u:'https://flowiseai.com',cat:'NoCode AI'},
+    {t:'Dify',d:'Open source LLM app development platform.',b:'ai',tags:['Platform','LLM','OSS'],u:'https://dify.ai',cat:'NoCode AI'},
+    {t:'Vercel AI SDK',d:'AI primitives for Next.js. Stream LLM responses easily.',b:'ai',tags:['SDK','React','Next'],u:'https://sdk.vercel.ai',cat:'SDKs'},
+    {t:'TensorFlow.js',d:'ML for the web. Run models in browser and Node.js.',b:'ai',tags:['ML','JS','OSS'],u:'https://tensorflow.org/js',cat:'ML Libs'},
+    {t:'ONNX Runtime',d:'Cross-platform ML model inference. Web, mobile and server.',b:'ai',tags:['ML','OSS','Cross'],u:'https://onnxruntime.ai',cat:'ML Libs'},
+    {t:'MediaPipe',d:"Google's ML solutions for live and streaming media.",b:'ai',tags:['ML','Google','Vision'],u:'https://mediapipe.dev',cat:'ML Libs'},
+    {t:'Transformers.js',d:'State-of-art ML models in the browser. Python parity.',b:'ai',tags:['ML','JS','OSS'],u:'https://github.com/xenova/transformers.js',cat:'ML Libs'},
+    {t:'face-api.js',d:'Face detection and recognition in the browser.',b:'ai',tags:['Vision','JS','OSS'],u:'https://github.com/justadudewhohacks/face-api.js',cat:'ML Libs'},
+    {t:'brain.js',d:'GPU accelerated neural networks in JavaScript.',b:'ai',tags:['ML','JS','OSS'],u:'https://brain.js.org',cat:'ML Libs'},
+    {t:'ml5.js',d:'Friendly ML for the web, built on TensorFlow.js.',b:'ai',tags:['ML','JS','Creative'],u:'https://ml5js.org',cat:'ML Libs'},
+    {t:'Teachable Machine',d:"Google's tool to train ML models without coding.",b:'ai',tags:['NoCode','ML','Google'],u:'https://teachablemachine.withgoogle.com',cat:'NoCode AI'},
+    {t:'Poe (Quora)',d:'Access multiple AI models. Claude, GPT, Gemini in one place.',b:'ai',tags:['Multi','LLM','Web'],u:'https://poe.com',cat:'Multi-Model'},
+    {t:'Venice AI',d:'Private, uncensored AI. Runs models locally on device.',b:'ai',tags:['Privacy','LLM','Local'],u:'https://venice.ai',cat:'Privacy AI'},
+    {t:'Character.ai',d:'Create and chat with AI characters. For creative projects.',b:'ai',tags:['Chat','Creative','LLM'],u:'https://character.ai',cat:'Creative AI'},
+    {t:'Notion AI',d:'AI writing and summarisation built into Notion.',b:'ai',tags:['Writing','Notion','AI'],u:'https://notion.so/product/ai',cat:'Writing AI'},
+    {t:'Grammarly AI',d:'AI writing assistant. Grammar, style and tone suggestions.',b:'ai',tags:['Writing','NLP','AI'],u:'https://grammarly.com',cat:'Writing AI'},
+    {t:'Copy.ai',d:'AI copywriting tool. Marketing copy, blog posts, emails.',b:'ai',tags:['Writing','Marketing','AI'],u:'https://copy.ai',cat:'Writing AI'},
+    {t:'Jasper AI',d:'Enterprise AI content platform for marketing teams.',b:'ai',tags:['Writing','Marketing','AI'],u:'https://jasper.ai',cat:'Writing AI'},
+    {t:'Tome AI',d:'AI-powered storytelling and presentation generation.',b:'ai',tags:['Slides','AI','Creative'],u:'https://tome.app',cat:'Creative AI'},
+    {t:'Gamma AI',d:'AI presentation and document creation tool.',b:'ai',tags:['Slides','AI','Design'],u:'https://gamma.app',cat:'Creative AI'},
+    {t:'v0 by Vercel',d:'Generate React UI components from text descriptions.',b:'ai',tags:['UI','React','Generate'],u:'https://v0.dev',cat:'Coding'},
+    {t:'GitHub Copilot Chat',d:'In-IDE AI chat for code explanation and generation.',b:'ai',tags:['IDE','Chat','Code'],u:'https://github.com/features/copilot',cat:'Coding'},
+    {t:'Sourcegraph Cody',d:'AI coding assistant with codebase context awareness.',b:'ai',tags:['IDE','Code','Context'],u:'https://sourcegraph.com/cody',cat:'Coding'},
+    {t:'CodiumAI',d:'AI test generation and code integrity for developers.',b:'ai',tags:['Testing','Code','AI'],u:'https://codium.ai',cat:'Testing AI'},
+    {t:'Snyk AI',d:'AI-powered security vulnerability detection in code.',b:'ai',tags:['Security','Code','AI'],u:'https://snyk.io',cat:'Security AI'},
+    {t:'Warp Terminal',d:'AI-powered terminal with command suggestions and explain.',b:'ai',tags:['Terminal','AI','Dev'],u:'https://warp.dev',cat:'Tools'},
+    {t:'Pieces for Devs',d:'AI-powered snippet manager with workflow integrations.',b:'ai',tags:['Snippets','AI','Dev'],u:'https://pieces.app',cat:'Tools'},
+    {t:'Aider',d:'AI pair programming in your terminal. Edits code with LLMs.',b:'ai',tags:['Terminal','Code','OSS'],u:'https://aider.chat',cat:'Coding'},
+    {t:'Continue.dev',d:'Open source AI code assistant for VS Code and JetBrains.',b:'ai',tags:['IDE','OSS','Code'],u:'https://continue.dev',cat:'Coding'},
+    {t:'Devin AI',d:'Autonomous AI software engineer by Cognition.',b:'ai',tags:['Agents','Code','Auto'],u:'https://cognition.ai',cat:'Agents'},
+    {t:'GPT Researcher',d:'Autonomous agent for comprehensive online research.',b:'ai',tags:['Research','Agents','OSS'],u:'https://gptr.dev',cat:'Agents'},
+    {t:'Perplexity API',d:'API access to Perplexity pplx models with web search.',b:'ai',tags:['Search','API','LLM'],u:'https://docs.perplexity.ai',cat:'APIs'},
+    {t:'Cerebras API',d:'World fastest AI inference. 1,000+ tokens/sec.',b:'ai',tags:['Fast','API','LLM'],u:'https://cerebras.ai',cat:'LLMs'},
+    {t:'xAI Grok API',d:"Elon Musk's Grok with real-time X/Twitter data access.",b:'ai',tags:['LLM','API','xAI'],u:'https://x.ai/api',cat:'LLMs'},
+    {t:'Gemma (Google)',d:'Lightweight open-source models from Google DeepMind.',b:'ai',tags:['LLM','OSS','Google'],u:'https://ai.google.dev/gemma',cat:'Local AI'},
+    {t:'Phi-3 (Microsoft)',d:'Small but powerful models from Microsoft Research.',b:'ai',tags:['LLM','OSS','Small'],u:'https://azure.microsoft.com/products/phi-3',cat:'Local AI'},
+    {t:'Qwen (Alibaba)',d:'Alibaba Cloud open-source multilingual LLM.',b:'ai',tags:['LLM','OSS','Multi'],u:'https://qwen.readthedocs.io',cat:'LLMs'},
+    {t:'DeepSeek',d:'Chinese open-source coder and chat model.',b:'ai',tags:['LLM','Code','OSS'],u:'https://deepseek.com',cat:'LLMs'},
+    {t:'Yi (01.AI)',d:'Bilingual open-source LLM with 200k context window.',b:'ai',tags:['LLM','OSS','Long'],u:'https://01.ai',cat:'LLMs'},
+    {t:'Command R (Cohere)',d:'LLM optimised for RAG and tool use.',b:'ai',tags:['LLM','RAG','API'],u:'https://cohere.com/command',cat:'LLMs'},
+    {t:'AI21 Jamba',d:'First production-grade Mamba-based language model.',b:'ai',tags:['LLM','API','Mamba'],u:'https://www.ai21.com/jamba',cat:'LLMs'},
+    {t:'Inflection Pi',d:'Personal AI assistant focused on emotional intelligence.',b:'ai',tags:['Chat','EQ','AI'],u:'https://inflection.ai',cat:'Assistants'},
+    {t:'Kimi (Moonshot)',d:'Chinese LLM with 200k context window for long documents.',b:'ai',tags:['LLM','Long','API'],u:'https://moonshot.cn',cat:'LLMs'},
+    {t:'Coze',d:'ByteDance AI bot building platform with plugins.',b:'ai',tags:['Bots','NoCode','AI'],u:'https://coze.com',cat:'NoCode AI'},
+    {t:'Wordware',d:'AI app builder using natural language programming.',b:'ai',tags:['NoCode','LLM','Apps'],u:'https://wordware.ai',cat:'NoCode AI'},
+    {t:'Stack AI',d:'No-code AI app builder. RAG, agents and automations.',b:'ai',tags:['NoCode','RAG','AI'],u:'https://stack-ai.com',cat:'NoCode AI'},
+  ];
+}
+
+function mkDev(){
+  return [
+    {t:'VS Code',d:'Most popular code editor. 50,000+ extensions.',b:'free',tags:['IDE','OSS','MS'],u:'https://code.visualstudio.com',cat:'Editors',icon:'dev'},
+    {t:'JetBrains IDEs',d:'Professional IDEs for Java, Python, JS, Kotlin and more.',b:'paid',tags:['IDE','Java','Python'],u:'https://jetbrains.com',cat:'Editors',icon:'dev'},
+    {t:'Neovim',d:'Hyperextensible Vim-based text editor.',b:'free',tags:['Editor','Vim','OSS'],u:'https://neovim.io',cat:'Editors',icon:'dev'},
+    {t:'Zed Editor',d:'High-performance multiplayer code editor written in Rust.',b:'free',tags:['Editor','Rust','Fast'],u:'https://zed.dev',cat:'Editors',icon:'dev'},
+    {t:'Sublime Text',d:'Sophisticated text editor for code, markup and prose.',b:'paid',tags:['Editor','Fast','Multi'],u:'https://sublimetext.com',cat:'Editors',icon:'dev'},
+    {t:'Vim',d:'Highly configurable text editor for efficient editing.',b:'free',tags:['Editor','Terminal','OSS'],u:'https://vim.org',cat:'Editors',icon:'dev'},
+    {t:'React',d:"Meta's UI library. Component-based frontend development.",b:'free',tags:['JS','UI','OSS'],u:'https://react.dev',cat:'Frontend',icon:'dev'},
+    {t:'Next.js',d:'React framework. SSR, SSG, file routing and API routes.',b:'free',tags:['React','SSR','Vercel'],u:'https://nextjs.org',cat:'Frontend',icon:'dev'},
+    {t:'Vue.js',d:'Progressive JavaScript framework. Approachable and flexible.',b:'free',tags:['JS','UI','OSS'],u:'https://vuejs.org',cat:'Frontend',icon:'dev'},
+    {t:'Nuxt.js',d:'Vue meta-framework. SSR, file routing and auto-imports.',b:'free',tags:['Vue','SSR','OSS'],u:'https://nuxt.com',cat:'Frontend',icon:'dev'},
+    {t:'Svelte / SvelteKit',d:'Compiler-based framework. Zero runtime overhead.',b:'free',tags:['JS','Compiler','OSS'],u:'https://svelte.dev',cat:'Frontend',icon:'dev'},
+    {t:'Solid.js',d:'Reactive UI library. Faster than React with a familiar API.',b:'free',tags:['JS','Reactive','OSS'],u:'https://solidjs.com',cat:'Frontend',icon:'dev'},
+    {t:'Qwik',d:'Resumability-first framework. Instant loading web apps.',b:'free',tags:['JS','Fast','OSS'],u:'https://qwik.dev',cat:'Frontend',icon:'dev'},
+    {t:'Astro',d:'Content-focused framework. Zero JS by default.',b:'free',tags:['JS','Static','OSS'],u:'https://astro.build',cat:'Frontend',icon:'dev'},
+    {t:'Remix',d:'Full stack React framework focused on web fundamentals.',b:'free',tags:['React','Full','OSS'],u:'https://remix.run',cat:'Frontend',icon:'dev'},
+    {t:'Angular',d:"Google's opinionated full framework for enterprise apps.",b:'free',tags:['JS','TypeScript','Google'],u:'https://angular.io',cat:'Frontend',icon:'dev'},
+    {t:'Tailwind CSS',d:'Utility-first CSS framework for rapid UI development.',b:'free',tags:['CSS','Utility','OSS'],u:'https://tailwindcss.com',cat:'CSS',icon:'design'},
+    {t:'Bootstrap 5',d:'Popular responsive CSS framework with components.',b:'free',tags:['CSS','UI','OSS'],u:'https://getbootstrap.com',cat:'CSS',icon:'design'},
+    {t:'Shadcn/UI',d:'Accessible React components built with Radix and Tailwind.',b:'free',tags:['React','UI','OSS'],u:'https://ui.shadcn.com',cat:'CSS',icon:'design'},
+    {t:'Radix UI',d:'Unstyled accessible component primitives for React.',b:'free',tags:['React','A11y','OSS'],u:'https://radix-ui.com',cat:'CSS',icon:'design'},
+    {t:'Chakra UI',d:'Modular and accessible component library for React.',b:'free',tags:['React','A11y','OSS'],u:'https://chakra-ui.com',cat:'CSS',icon:'design'},
+    {t:'Material UI',d:"Google's Material Design React components.",b:'free',tags:['React','Material','OSS'],u:'https://mui.com',cat:'CSS',icon:'design'},
+    {t:'DaisyUI',d:'Tailwind CSS component library. 50+ components.',b:'free',tags:['CSS','Tailwind','OSS'],u:'https://daisyui.com',cat:'CSS',icon:'design'},
+    {t:'Framer Motion',d:'Production-ready animation library for React.',b:'free',tags:['Animation','React','OSS'],u:'https://framer.com/motion',cat:'Animation',icon:'design'},
+    {t:'GSAP',d:'Professional JavaScript animation library. Ultra performant.',b:'paid',tags:['Animation','JS','Pro'],u:'https://greensock.com/gsap',cat:'Animation',icon:'design'},
+    {t:'Three.js',d:'3D graphics in the browser using WebGL.',b:'free',tags:['3D','WebGL','OSS'],u:'https://threejs.org',cat:'3D',icon:'design'},
+    {t:'React Three Fiber',d:'React renderer for Three.js. Declarative 3D scenes.',b:'free',tags:['3D','React','OSS'],u:'https://docs.pmnd.rs/react-three-fiber',cat:'3D',icon:'design'},
+    {t:'Babylon.js',d:'Powerful 3D game and rendering engine for the web.',b:'free',tags:['3D','Games','OSS'],u:'https://babylonjs.com',cat:'3D',icon:'design'},
+    {t:'Node.js',d:'JavaScript runtime for server-side development.',b:'free',tags:['JS','Runtime','OSS'],u:'https://nodejs.org',cat:'Backend',icon:'dev'},
+    {t:'Express.js',d:'Minimal and flexible Node.js web application framework.',b:'free',tags:['Node','REST','OSS'],u:'https://expressjs.com',cat:'Backend',icon:'dev'},
+    {t:'Fastify',d:'Fast and low overhead web framework for Node.js.',b:'free',tags:['Node','Fast','OSS'],u:'https://fastify.dev',cat:'Backend',icon:'dev'},
+    {t:'NestJS',d:'Progressive Node.js framework for scalable server-side apps.',b:'free',tags:['Node','TypeScript','OSS'],u:'https://nestjs.com',cat:'Backend',icon:'dev'},
+    {t:'Hono',d:'Ultrafast web framework for Cloudflare Workers and more.',b:'free',tags:['Edge','JS','OSS'],u:'https://hono.dev',cat:'Backend',icon:'dev'},
+    {t:'Deno',d:'Secure JavaScript runtime with native TypeScript support.',b:'free',tags:['JS','TypeScript','OSS'],u:'https://deno.com',cat:'Backend',icon:'dev'},
+    {t:'Bun',d:'All-in-one JavaScript toolkit. Runtime, bundler, test runner.',b:'free',tags:['JS','Fast','OSS'],u:'https://bun.sh',cat:'Backend',icon:'dev'},
+    {t:'Django',d:'High-level Python web framework with batteries included.',b:'free',tags:['Python','Full','OSS'],u:'https://djangoproject.com',cat:'Backend',icon:'dev'},
+    {t:'FastAPI',d:'Modern Python web framework. Auto-generated API docs.',b:'free',tags:['Python','API','OSS'],u:'https://fastapi.tiangolo.com',cat:'Backend',icon:'dev'},
+    {t:'Flask',d:'Lightweight Python microframework for web apps.',b:'free',tags:['Python','Micro','OSS'],u:'https://flask.palletsprojects.com',cat:'Backend',icon:'dev'},
+    {t:'Laravel',d:'PHP web application framework with expressive syntax.',b:'free',tags:['PHP','Full','OSS'],u:'https://laravel.com',cat:'Backend',icon:'dev'},
+    {t:'Spring Boot',d:'Java framework for production-ready enterprise apps.',b:'free',tags:['Java','Enterprise','OSS'],u:'https://spring.io/projects/spring-boot',cat:'Backend',icon:'dev'},
+    {t:'Go / Gin',d:'Golang web framework with minimal overhead.',b:'free',tags:['Go','Fast','OSS'],u:'https://gin-gonic.com',cat:'Backend',icon:'dev'},
+    {t:'Rust / Axum',d:'Ergonomic and modular Rust web framework.',b:'free',tags:['Rust','Fast','OSS'],u:'https://github.com/tokio-rs/axum',cat:'Backend',icon:'dev'},
+    {t:'PostgreSQL',d:'Powerful open source object-relational database.',b:'free',tags:['DB','SQL','OSS'],u:'https://postgresql.org',cat:'Databases',icon:'db'},
+    {t:'MySQL',d:'World most popular open source relational database.',b:'free',tags:['DB','SQL','OSS'],u:'https://mysql.com',cat:'Databases',icon:'db'},
+    {t:'SQLite',d:'Self-contained, serverless SQL database engine.',b:'free',tags:['DB','SQL','Embedded'],u:'https://sqlite.org',cat:'Databases',icon:'db'},
+    {t:'MongoDB',d:'Document database with flexible JSON-like schema.',b:'free',tags:['DB','NoSQL','OSS'],u:'https://mongodb.com',cat:'Databases',icon:'db'},
+    {t:'Redis',d:'In-memory data store. Cache, session, pub/sub.',b:'free',tags:['Cache','DB','OSS'],u:'https://redis.io',cat:'Databases',icon:'db'},
+    {t:'Supabase',d:'Open source Firebase alternative. Postgres + Auth + Storage.',b:'free',tags:['DB','BaaS','OSS'],u:'https://supabase.com',cat:'Databases',icon:'db'},
+    {t:'Firebase',d:'Google BaaS. Firestore, Auth, Functions and Hosting.',b:'free',tags:['DB','BaaS','Google'],u:'https://firebase.google.com',cat:'Databases',icon:'db'},
+    {t:'PlanetScale',d:'Serverless MySQL platform. Branching and non-blocking schema.',b:'free',tags:['DB','MySQL','Serverless'],u:'https://planetscale.com',cat:'Databases',icon:'db'},
+    {t:'Neon',d:'Serverless Postgres with branching for development.',b:'free',tags:['DB','Postgres','Serverless'],u:'https://neon.tech',cat:'Databases',icon:'db'},
+    {t:'Turso',d:'Edge SQLite database. Powered by libSQL.',b:'free',tags:['DB','SQLite','Edge'],u:'https://turso.tech',cat:'Databases',icon:'db'},
+    {t:'Vercel',d:'Deploy frontends instantly. Edge functions and CI/CD.',b:'free',tags:['Deploy','CDN','CI/CD'],u:'https://vercel.com',cat:'Hosting',icon:'host'},
+    {t:'Netlify',d:'JAMstack hosting with continuous deployment from Git.',b:'free',tags:['Deploy','CDN','CI/CD'],u:'https://netlify.com',cat:'Hosting',icon:'host'},
+    {t:'Cloudflare Pages',d:'Deploy full-stack apps on Cloudflare edge network.',b:'free',tags:['Deploy','Edge','CF'],u:'https://pages.cloudflare.com',cat:'Hosting',icon:'host'},
+    {t:'Railway',d:'Deploy anything from Git. Postgres, Redis, Docker included.',b:'free',tags:['Deploy','Docker','Easy'],u:'https://railway.app',cat:'Hosting',icon:'host'},
+    {t:'Render',d:'Cloud hosting for web services, databases and static sites.',b:'free',tags:['Deploy','Cloud','Easy'],u:'https://render.com',cat:'Hosting',icon:'host'},
+    {t:'Fly.io',d:'Run full-stack apps close to your users. Global edge.',b:'free',tags:['Deploy','Docker','Edge'],u:'https://fly.io',cat:'Hosting',icon:'host'},
+    {t:'DigitalOcean',d:'Developer-friendly cloud. Droplets, Apps and Kubernetes.',b:'paid',tags:['Cloud','VPS','DO'],u:'https://digitalocean.com',cat:'Hosting',icon:'host'},
+    {t:'AWS',d:"Amazon Web Services. World's most comprehensive cloud.",b:'paid',tags:['Cloud','AWS','Enterprise'],u:'https://aws.amazon.com',cat:'Hosting',icon:'host'},
+    {t:'Google Cloud',d:'Google Cloud Platform with BigQuery, GKE and more.',b:'paid',tags:['Cloud','GCP','Google'],u:'https://cloud.google.com',cat:'Hosting',icon:'host'},
+    {t:'Azure',d:"Microsoft's cloud platform for enterprise workloads.",b:'paid',tags:['Cloud','Azure','MS'],u:'https://azure.microsoft.com',cat:'Hosting',icon:'host'},
+    {t:'GitHub Actions',d:'CI/CD automation directly in your GitHub repository.',b:'free',tags:['CI/CD','GitHub','Automation'],u:'https://github.com/features/actions',cat:'CI/CD',icon:'dev'},
+    {t:'GitLab CI/CD',d:'Integrated CI/CD pipelines in GitLab.',b:'free',tags:['CI/CD','GitLab','DevOps'],u:'https://docs.gitlab.com/ee/ci',cat:'CI/CD',icon:'dev'},
+    {t:'CircleCI',d:'Continuous integration and delivery platform.',b:'free',tags:['CI/CD','Automation','Cloud'],u:'https://circleci.com',cat:'CI/CD',icon:'dev'},
+    {t:'Docker',d:'Container platform for building and shipping apps.',b:'free',tags:['Container','DevOps','OSS'],u:'https://docker.com',cat:'DevOps',icon:'dev'},
+    {t:'Kubernetes',d:'Container orchestration at scale.',b:'free',tags:['K8s','DevOps','OSS'],u:'https://kubernetes.io',cat:'DevOps',icon:'dev'},
+    {t:'Terraform',d:'Infrastructure as code. Cloud-agnostic provisioning.',b:'free',tags:['IaC','DevOps','OSS'],u:'https://terraform.io',cat:'DevOps',icon:'dev'},
+    {t:'Vite',d:'Next generation frontend build tool. Blazing fast HMR.',b:'free',tags:['Build','JS','OSS'],u:'https://vitejs.dev',cat:'Build Tools',icon:'dev'},
+    {t:'Webpack',d:'Static module bundler for modern JavaScript applications.',b:'free',tags:['Bundle','JS','OSS'],u:'https://webpack.js.org',cat:'Build Tools',icon:'dev'},
+    {t:'Turbopack',d:'Incremental bundler from Vercel. Successor to Webpack.',b:'free',tags:['Bundle','Rust','Fast'],u:'https://turbo.build/pack',cat:'Build Tools',icon:'dev'},
+    {t:'esbuild',d:'Extremely fast JavaScript and TypeScript bundler.',b:'free',tags:['Bundle','Go','Fast'],u:'https://esbuild.github.io',cat:'Build Tools',icon:'dev'},
+    {t:'Rollup',d:'Module bundler for JavaScript libraries.',b:'free',tags:['Bundle','JS','OSS'],u:'https://rollupjs.org',cat:'Build Tools',icon:'dev'},
+    {t:'Parcel',d:'Zero-config web application bundler.',b:'free',tags:['Bundle','JS','NoConfig'],u:'https://parceljs.org',cat:'Build Tools',icon:'dev'},
+    {t:'TypeScript',d:'JavaScript with type safety. Catches bugs at compile time.',b:'free',tags:['JS','Types','MS'],u:'https://typescriptlang.org',cat:'Languages',icon:'dev'},
+    {t:'Rust',d:'Systems programming language. Memory safe and blazing fast.',b:'free',tags:['Systems','Fast','OSS'],u:'https://rust-lang.org',cat:'Languages',icon:'dev'},
+    {t:'Go (Golang)',d:'Simple, fast and reliable language by Google.',b:'free',tags:['Systems','Fast','Google'],u:'https://go.dev',cat:'Languages',icon:'dev'},
+    {t:'Python',d:'Versatile language for web, AI, data and automation.',b:'free',tags:['General','AI','OSS'],u:'https://python.org',cat:'Languages',icon:'dev'},
+    {t:'Kotlin',d:'Modern language for Android and server-side development.',b:'free',tags:['Android','JVM','OSS'],u:'https://kotlinlang.org',cat:'Languages',icon:'dev'},
+    {t:'Swift',d:"Apple's language for iOS, macOS and server-side.",b:'free',tags:['iOS','Apple','OSS'],u:'https://swift.org',cat:'Languages',icon:'dev'},
+    {t:'Dart',d:"Google's language. Used with Flutter for cross-platform.",b:'free',tags:['Flutter','Cross','Google'],u:'https://dart.dev',cat:'Languages',icon:'dev'},
+    {t:'Vitest',d:'Blazing fast unit test framework powered by Vite.',b:'free',tags:['Testing','JS','OSS'],u:'https://vitest.dev',cat:'Testing',icon:'test'},
+    {t:'Jest',d:'Delightful JavaScript testing framework.',b:'free',tags:['Testing','JS','Meta'],u:'https://jestjs.io',cat:'Testing',icon:'test'},
+    {t:'Playwright',d:'End-to-end testing for web apps. Cross-browser.',b:'free',tags:['E2E','Testing','MS'],u:'https://playwright.dev',cat:'Testing',icon:'test'},
+    {t:'Cypress',d:'Fast, easy and reliable testing for web apps.',b:'free',tags:['E2E','Testing','JS'],u:'https://cypress.io',cat:'Testing',icon:'test'},
+    {t:'Storybook',d:'Workshop for building UI components in isolation.',b:'free',tags:['UI','Testing','OSS'],u:'https://storybook.js.org',cat:'Testing',icon:'test'},
+    {t:'Postman',d:'API testing and documentation platform.',b:'free',tags:['API','Testing','REST'],u:'https://postman.com',cat:'Testing',icon:'test'},
+    {t:'Insomnia',d:'Open source REST and GraphQL API client.',b:'free',tags:['API','Testing','OSS'],u:'https://insomnia.rest',cat:'Testing',icon:'test'},
+    {t:'Sentry',d:'Real-time error tracking and performance monitoring.',b:'free',tags:['Monitor','Errors','JS'],u:'https://sentry.io',cat:'Monitoring',icon:'dev'},
+    {t:'Datadog',d:'Cloud monitoring, APM and log management.',b:'paid',tags:['Monitor','APM','Cloud'],u:'https://datadoghq.com',cat:'Monitoring',icon:'dev'},
+    {t:'New Relic',d:'Full-stack observability platform.',b:'free',tags:['Monitor','APM','Cloud'],u:'https://newrelic.com',cat:'Monitoring',icon:'dev'},
+    {t:'Grafana',d:'Open source monitoring and observability platform.',b:'free',tags:['Monitor','Metrics','OSS'],u:'https://grafana.com',cat:'Monitoring',icon:'dev'},
+    {t:'Prometheus',d:'Open source monitoring system with time series DB.',b:'free',tags:['Monitor','Metrics','OSS'],u:'https://prometheus.io',cat:'Monitoring',icon:'dev'},
+    {t:'LogRocket',d:'Frontend monitoring with session replay.',b:'paid',tags:['Monitor','Frontend','UX'],u:'https://logrocket.com',cat:'Monitoring',icon:'dev'},
+    {t:'Linear',d:'Issue tracking for modern software teams.',b:'paid',tags:['PM','Issues','Fast'],u:'https://linear.app',cat:'Project Mgmt',icon:'dev'},
+    {t:'Jira',d:"Atlassian's project management for agile teams.",b:'paid',tags:['PM','Agile','Atlassian'],u:'https://atlassian.com/software/jira',cat:'Project Mgmt',icon:'dev'},
+    {t:'Notion',d:'All-in-one workspace. Notes, docs, DB and project tracking.',b:'free',tags:['PM','Docs','Notes'],u:'https://notion.so',cat:'Project Mgmt',icon:'dev'},
+    {t:'Figma',d:'Collaborative UI design tool for web and mobile.',b:'free',tags:['Design','UI','Collab'],u:'https://figma.com',cat:'Design',icon:'design'},
+    {t:'Excalidraw',d:'Virtual whiteboard for sketching diagrams.',b:'free',tags:['Diagrams','OSS','Collab'],u:'https://excalidraw.com',cat:'Design',icon:'design'},
+    {t:'Lucide Icons',d:'Beautiful and consistent icon library. 1000+ SVG icons.',b:'free',tags:['Icons','SVG','OSS'],u:'https://lucide.dev',cat:'Design',icon:'design'},
+    {t:'Heroicons',d:'Beautiful hand-crafted SVG icons by Tailwind team.',b:'free',tags:['Icons','SVG','OSS'],u:'https://heroicons.com',cat:'Design',icon:'design'},
+    {t:'Tabler Icons',d:'2000+ pixel-perfect SVG icons.',b:'free',tags:['Icons','SVG','OSS'],u:'https://tabler.io/icons',cat:'Design',icon:'design'},
+    {t:'Prisma ORM',d:'Next-gen Node.js and TypeScript ORM for SQL databases.',b:'free',tags:['ORM','TypeScript','OSS'],u:'https://prisma.io',cat:'ORMs',icon:'db'},
+    {t:'Drizzle ORM',d:'TypeScript ORM. Lightweight and performant.',b:'free',tags:['ORM','TypeScript','OSS'],u:'https://orm.drizzle.team',cat:'ORMs',icon:'db'},
+    {t:'Sequelize',d:'Promise-based Node.js ORM for Postgres, MySQL and more.',b:'free',tags:['ORM','Node','OSS'],u:'https://sequelize.org',cat:'ORMs',icon:'db'},
+    {t:'Socket.io',d:'Real-time bidirectional event-based communication.',b:'free',tags:['Realtime','WebSocket','OSS'],u:'https://socket.io',cat:'Realtime',icon:'api'},
+    {t:'Ably',d:'Pub/sub messaging and realtime data streaming platform.',b:'free',tags:['Realtime','PubSub','API'],u:'https://ably.com',cat:'Realtime',icon:'api'},
+    {t:'Pusher',d:'Hosted APIs for real-time web and mobile apps.',b:'free',tags:['Realtime','WebSocket','API'],u:'https://pusher.com',cat:'Realtime',icon:'api'},
+    {t:'GraphQL',d:'Query language for APIs and runtime for executing queries.',b:'free',tags:['API','Query','OSS'],u:'https://graphql.org',cat:'API Design',icon:'api'},
+    {t:'tRPC',d:'End-to-end typesafe APIs without schema or code gen.',b:'free',tags:['TypeScript','API','OSS'],u:'https://trpc.io',cat:'API Design',icon:'api'},
+    {t:'OpenAPI / Swagger',d:'REST API specification and documentation format.',b:'free',tags:['API','Docs','OSS'],u:'https://swagger.io/specification',cat:'API Design',icon:'api'},
+    {t:'Zod',d:'TypeScript-first schema validation library.',b:'free',tags:['Validation','TypeScript','OSS'],u:'https://zod.dev',cat:'Validation',icon:'dev'},
+    {t:'Yup',d:'JavaScript schema builder for value parsing and validation.',b:'free',tags:['Validation','JS','OSS'],u:'https://github.com/jquense/yup',cat:'Validation',icon:'dev'},
+    {t:'React Hook Form',d:'Performant forms with easy validation for React.',b:'free',tags:['Forms','React','OSS'],u:'https://react-hook-form.com',cat:'Forms',icon:'dev'},
+    {t:'Formik',d:'Build forms in React without the tears.',b:'free',tags:['Forms','React','OSS'],u:'https://formik.org',cat:'Forms',icon:'dev'},
+    {t:'Zustand',d:'Small, fast state management for React.',b:'free',tags:['State','React','OSS'],u:'https://zustand-demo.pmnd.rs',cat:'State Mgmt',icon:'dev'},
+    {t:'Redux Toolkit',d:'The official toolset for efficient Redux development.',b:'free',tags:['State','React','OSS'],u:'https://redux-toolkit.js.org',cat:'State Mgmt',icon:'dev'},
+    {t:'Jotai',d:'Atomic state management for React.',b:'free',tags:['State','React','Atomic'],u:'https://jotai.org',cat:'State Mgmt',icon:'dev'},
+    {t:'React Query',d:'Async state management for data fetching in React.',b:'free',tags:['State','Data','React'],u:'https://tanstack.com/query',cat:'Data Fetching',icon:'dev'},
+    {t:'SWR',d:'React hooks for data fetching. Stale-while-revalidate.',b:'free',tags:['Data','React','Vercel'],u:'https://swr.vercel.app',cat:'Data Fetching',icon:'dev'},
+    {t:'Axios',d:'Promise-based HTTP client for the browser and Node.js.',b:'free',tags:['HTTP','JS','OSS'],u:'https://axios-http.com',cat:'HTTP',icon:'api'},
+    {t:'Ky',d:'Tiny and elegant HTTP client based on Fetch API.',b:'free',tags:['HTTP','JS','OSS'],u:'https://github.com/sindresorhus/ky',cat:'HTTP',icon:'api'},
+    {t:'Biome',d:'Toolchain for web projects. Linting and formatting in Rust.',b:'free',tags:['Lint','Format','Rust'],u:'https://biomejs.dev',cat:'Linting',icon:'dev'},
+    {t:'ESLint',d:'Find and fix problems in JavaScript code.',b:'free',tags:['Lint','JS','OSS'],u:'https://eslint.org',cat:'Linting',icon:'dev'},
+    {t:'Prettier',d:'Opinionated code formatter for consistent style.',b:'free',tags:['Format','JS','OSS'],u:'https://prettier.io',cat:'Linting',icon:'dev'},
+    {t:'Husky',d:'Git hooks made easy. Run linters before commits.',b:'free',tags:['Git','Lint','OSS'],u:'https://typicode.github.io/husky',cat:'Git',icon:'dev'},
+    {t:'Git',d:'Distributed version control system.',b:'free',tags:['VCS','OSS','Terminal'],u:'https://git-scm.com',cat:'Git',icon:'dev'},
+    {t:'GitHub',d:'Code hosting, CI/CD, Issues, PRs and Codespaces.',b:'free',tags:['VCS','Hosting','Collab'],u:'https://github.com',cat:'Git',icon:'dev'},
+    {t:'GitLab',d:'DevOps platform with built-in CI/CD and security scanning.',b:'free',tags:['VCS','DevOps','OSS'],u:'https://gitlab.com',cat:'Git',icon:'dev'},
+    {t:'Cloudflare',d:'CDN, DNS, DDoS protection and edge computing.',b:'free',tags:['CDN','Security','DNS'],u:'https://cloudflare.com',cat:'Infrastructure',icon:'host'},
+    {t:'ngrok',d:'Secure tunnels to localhost for testing webhooks.',b:'free',tags:['Tunnel','Dev','Network'],u:'https://ngrok.com',cat:'Infrastructure',icon:'dev'},
+    {t:'mkcert',d:'Make locally-trusted development certificates.',b:'free',tags:['SSL','Dev','OSS'],u:'https://github.com/FiloSottile/mkcert',cat:'Security',icon:'sec'},
+    {t:'1Password CLI',d:'Secrets management for developer workflows.',b:'paid',tags:['Secrets','Security','CLI'],u:'https://developer.1password.com/docs/cli',cat:'Security',icon:'sec'},
+    {t:'HashiCorp Vault',d:'Secrets management and data protection solution.',b:'free',tags:['Secrets','Security','OSS'],u:'https://vaultproject.io',cat:'Security',icon:'sec'},
+    {t:'React Native',d:'Build mobile apps with React for iOS and Android.',b:'free',tags:['Mobile','React','OSS'],u:'https://reactnative.dev',cat:'Mobile',icon:'mobile'},
+    {t:'Flutter',d:"Google's UI toolkit for native mobile, web and desktop.",b:'free',tags:['Mobile','Dart','Google'],u:'https://flutter.dev',cat:'Mobile',icon:'mobile'},
+    {t:'Expo',d:'Platform for React Native apps. Build, deploy and update.',b:'free',tags:['Mobile','React','OSS'],u:'https://expo.dev',cat:'Mobile',icon:'mobile'},
+    {t:'Capacitor',d:'Build cross-platform apps with web technologies.',b:'free',tags:['Mobile','JS','OSS'],u:'https://capacitorjs.com',cat:'Mobile',icon:'mobile'},
+    {t:'Ionic',d:'Cross-platform mobile and desktop apps from one codebase.',b:'free',tags:['Mobile','JS','OSS'],u:'https://ionicframework.com',cat:'Mobile',icon:'mobile'},
+    {t:'Electron',d:'Build desktop apps with JavaScript, HTML and CSS.',b:'free',tags:['Desktop','JS','OSS'],u:'https://electronjs.org',cat:'Desktop',icon:'dev'},
+    {t:'Tauri',d:'Lightweight alternative to Electron using Rust.',b:'free',tags:['Desktop','Rust','OSS'],u:'https://tauri.app',cat:'Desktop',icon:'dev'},
+    {t:'WASM / WebAssembly',d:'Run code written in C, Rust, Go in the browser at near-native speed.',b:'free',tags:['WASM','Performance','W3C'],u:'https://webassembly.org',cat:'Performance',icon:'dev'},
+    {t:'Web Workers',d:'Run scripts in background threads to not block UI.',b:'free',tags:['JS','Performance','Browser'],u:'https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API',cat:'Performance',icon:'dev'},
+    {t:'Service Workers',d:'Intercept network requests for offline-first PWAs.',b:'free',tags:['PWA','Offline','Browser'],u:'https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API',cat:'PWA',icon:'dev'},
+    {t:'Workbox',d:'JavaScript libraries for adding offline support.',b:'free',tags:['PWA','Offline','Google'],u:'https://developer.chrome.com/docs/workbox',cat:'PWA',icon:'dev'},
+    {t:'i18next',d:'Internationalisation framework for JavaScript.',b:'free',tags:['i18n','JS','OSS'],u:'https://i18next.com',cat:'i18n',icon:'dev'},
+    {t:'date-fns',d:'Modern JavaScript date utility library.',b:'free',tags:['Dates','JS','OSS'],u:'https://date-fns.org',cat:'Utilities',icon:'dev'},
+    {t:'dayjs',d:'2kB alternative to Moment.js. Same API.',b:'free',tags:['Dates','JS','Tiny'],u:'https://day.js.org',cat:'Utilities',icon:'dev'},
+    {t:'Lodash',d:'Modern JavaScript utility library for arrays and objects.',b:'free',tags:['Utils','JS','OSS'],u:'https://lodash.com',cat:'Utilities',icon:'dev'},
+    {t:'Recharts',d:'Composable charting library built on React components.',b:'free',tags:['Charts','React','OSS'],u:'https://recharts.org',cat:'Charts',icon:'dev'},
+    {t:'Chart.js',d:'Simple yet flexible JavaScript charting library.',b:'free',tags:['Charts','JS','OSS'],u:'https://chartjs.org',cat:'Charts',icon:'dev'},
+    {t:'D3.js',d:'Data-driven documents. Powerful visualisation library.',b:'free',tags:['Charts','Data','OSS'],u:'https://d3js.org',cat:'Charts',icon:'dev'},
+    {t:'ApexCharts',d:'Modern JavaScript charting library with 20+ chart types.',b:'free',tags:['Charts','JS','OSS'],u:'https://apexcharts.com',cat:'Charts',icon:'dev'},
+    {t:'OpenLayers',d:'High-performance web mapping library.',b:'free',tags:['Maps','OSS','JS'],u:'https://openlayers.org',cat:'Maps',icon:'dev'},
+    {t:'Leaflet',d:'Lightweight JavaScript mapping library. Mobile-friendly.',b:'free',tags:['Maps','JS','OSS'],u:'https://leafletjs.com',cat:'Maps',icon:'dev'},
+    {t:'Stripe.js',d:'Stripe client-side library for secure payment forms.',b:'free',tags:['Payments','JS','SDK'],u:'https://stripe.com/docs/js',cat:'Payments',icon:'dev'},
+    {t:'Zustand Persist',d:'Persist and rehydrate Zustand state with localStorage.',b:'free',tags:['State','React','OSS'],u:'https://github.com/pmndrs/zustand',cat:'State Mgmt',icon:'dev'},
+    {t:'Immer',d:'Create next immutable state by mutating current state.',b:'free',tags:['State','Immutable','OSS'],u:'https://immerjs.github.io/immer',cat:'State Mgmt',icon:'dev'},
+    {t:'XState',d:'State machines and statecharts for complex state logic.',b:'free',tags:['State','FSM','OSS'],u:'https://xstate.js.org',cat:'State Mgmt',icon:'dev'},
+    {t:'Pinia',d:'The official state management solution for Vue.',b:'free',tags:['State','Vue','OSS'],u:'https://pinia.vuejs.org',cat:'State Mgmt',icon:'dev'},
+    {t:'Nuxt Pinia',d:'Pinia integration for Nuxt. SSR-compatible state.',b:'free',tags:['State','Nuxt','OSS'],u:'https://nuxt.com/modules/pinia',cat:'State Mgmt',icon:'dev'},
+    {t:'Sanity CMS',d:'Headless CMS with real-time collaboration.',b:'free',tags:['CMS','Headless','Collab'],u:'https://sanity.io',cat:'CMS',icon:'dev'},
+    {t:'Contentful',d:'API-first headless CMS for structured content.',b:'paid',tags:['CMS','Headless','API'],u:'https://contentful.com',cat:'CMS',icon:'dev'},
+    {t:'Strapi',d:'Open source headless CMS. REST and GraphQL APIs.',b:'free',tags:['CMS','OSS','API'],u:'https://strapi.io',cat:'CMS',icon:'dev'},
+    {t:'Ghost',d:'Node.js CMS and blogging platform.',b:'free',tags:['CMS','Blog','OSS'],u:'https://ghost.org',cat:'CMS',icon:'dev'},
+    {t:'WordPress REST API',d:'Headless WordPress via REST API.',b:'free',tags:['CMS','PHP','REST'],u:'https://developer.wordpress.org/rest-api',cat:'CMS',icon:'dev'},
+    {t:'Nx',d:'Build system and monorepo management tool.',b:'free',tags:['Monorepo','Build','OSS'],u:'https://nx.dev',cat:'Monorepo',icon:'dev'},
+    {t:'Turborepo',d:"Vercel's high-performance build system for monorepos.",b:'free',tags:['Monorepo','Build','Vercel'],u:'https://turbo.build/repo',cat:'Monorepo',icon:'dev'},
+    {t:'pnpm',d:'Fast and disk efficient JavaScript package manager.',b:'free',tags:['Package','JS','OSS'],u:'https://pnpm.io',cat:'Package Mgmt',icon:'dev'},
+    {t:'Homebrew',d:'The missing package manager for macOS (and Linux).',b:'free',tags:['Package','macOS','OSS'],u:'https://brew.sh',cat:'Package Mgmt',icon:'dev'},
+    {t:'asdf',d:'Multi-language runtime version manager.',b:'free',tags:['Versions','Runtime','OSS'],u:'https://asdf-vm.com',cat:'Package Mgmt',icon:'dev'},
+    {t:'direnv',d:'Shell extension for managing per-directory environments.',b:'free',tags:['Shell','Env','OSS'],u:'https://direnv.net',cat:'Shell',icon:'dev'},
+    {t:'Oh My Zsh',d:'Framework for managing Zsh configuration.',b:'free',tags:['Shell','ZSH','OSS'],u:'https://ohmyz.sh',cat:'Shell',icon:'dev'},
+    {t:'Fig',d:'IDE-style autocomplete for terminal commands.',b:'free',tags:['Terminal','Autocomplete','OSS'],u:'https://fig.io',cat:'Terminal',icon:'dev'},
+  ];
+}
+
+const ALL_APIS = mkAPI();
+const ALL_AI = mkAI();
+const ALL_DEV = mkDev();
+
+// Display state
+let apiShown = 12, aiShown = 12, devShown = 12, solShown = 8;
+
+function renderCard(item, icon_type){
+  const ic = makeIcon(icon_type || (item.badge==='ai'?'ai':item.icon||'api'));
+  const d = document.createElement('div');
+  d.className='r-card';
+  d.style.animationDelay = Math.random()*0.3+'s';
+  d.innerHTML=`
+    <div class="card-top">
+      <div class="card-icon">${ic}</div>
+      <span class="card-badge badge-${item.b||item.badge}">${(item.b||item.badge||'').toUpperCase()}</span>
+    </div>
+    <div class="card-title">${item.t||item.title}</div>
+    <div class="card-desc">${item.d||item.desc}</div>
+    <div class="card-foot">
+      <div class="card-tags">${(item.tags||[]).map(t=>`<span class="c-tag">${t}</span>`).join('')}</div>
+      <span class="card-arrow">→</span>
+    </div>`;
+  d.onclick=()=>{ if(item.u||item.url) window.open(item.u||item.url,'_blank'); };
+  return d;
+}
+
+function renderGrid(gridId, data, count, catId, countId){
+  const grid = document.getElementById(gridId);
+  grid.innerHTML='';
+  const cats = [...new Set(data.map(i=>i.cat))].filter(Boolean);
+  const tabsEl = document.getElementById(catId);
+  if(tabsEl){
+    tabsEl.innerHTML='<button class="cat-tab active" onclick="filterCat(this,\''+gridId+'\',\'all\')">ALL</button>';
+    cats.slice(0,8).forEach(c=>{
+      tabsEl.innerHTML+=`<button class="cat-tab" onclick="filterCat(this,'${gridId}','${c}')">${c.toUpperCase()}</button>`;
+    });
+  }
+  document.getElementById(countId).textContent=`${data.length} RESOURCES`;
+  data.slice(0,count).forEach(item=>grid.appendChild(renderCard(item, item.icon)));
+}
+
+function filterCat(btn, gridId, cat){
+  btn.closest('.cat-tabs').querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById(gridId);
+  grid.innerHTML='';
+  const src = gridId==='apiGrid'?ALL_APIS:gridId==='aiGrid'?ALL_AI:ALL_DEV;
+  const filtered = cat==='all'?src:src.filter(i=>i.cat===cat);
+  filtered.slice(0,20).forEach(item=>grid.appendChild(renderCard(item,item.icon)));
+}
+
+function loadMoreAPI(){ apiShown+=12; renderGrid('apiGrid',ALL_APIS,apiShown,'apiCatTabs','apiCount'); }
+function loadMoreAI(){ aiShown+=12; renderGrid('aiGrid',ALL_AI,aiShown,'aiCatTabs','aiCount'); }
+function loadMoreDev(){ devShown+=12; renderGrid('devGrid',ALL_DEV,devShown,'','devCount'); }
+function loadMoreSol(){ solShown+=6; renderSolutions(solShown); }
+
+// Initial render
+renderGrid('apiGrid',ALL_APIS,apiShown,'apiCatTabs','apiCount');
+renderGrid('aiGrid',ALL_AI,aiShown,'aiCatTabs','aiCount');
+renderGrid('devGrid',ALL_DEV,devShown,'','devCount');
+
+// Solutions
+const SOLUTIONS=[
+  {num:'01',cat:'AUTHENTICATION',title:'JWT Auth from Scratch',desc:'Sign, verify and refresh JSON Web Tokens without libraries. Secure route middleware for Node.js.',code:`const jwt=require('jsonwebtoken');\nconst token=jwt.sign(\n  {userId:user.id,role:user.role},\n  process.env.JWT_SECRET,\n  {expiresIn:'7d'}\n);`},
+  {num:'02',cat:'DATABASE',title:'Cursor-Based Pagination',desc:'Efficient pagination for large datasets. 10x faster than OFFSET for millions of rows.',code:`SELECT * FROM posts\nWHERE created_at < :cursor\nORDER BY created_at DESC\nLIMIT 20;\n-- Use last row's timestamp as next cursor`},
+  {num:'03',cat:'API DESIGN',title:'Rate Limiting Middleware',desc:'Token bucket algorithm protecting Node.js APIs. Redis-backed for distributed systems.',code:`const rateLimit=require('express-rate-limit');\nconst limiter=rateLimit({\n  windowMs:15*60*1000,\n  max:100,\n  standardHeaders:true\n});\napp.use('/api/',limiter);`},
+  {num:'04',cat:'PERFORMANCE',title:'Debounce & Throttle',desc:'Classic JS utilities for search inputs and scroll events. Zero dependencies.',code:`const debounce=(fn,delay)=>{\n  let timer;\n  return (...args)=>{\n    clearTimeout(timer);\n    timer=setTimeout(()=>fn(...args),delay);\n  };\n};`},
+  {num:'05',cat:'SECURITY',title:'XSS Prevention',desc:"Sanitise user input server-side. Never trust the browser. Escape HTML before rendering.",code:`const sanitize=str=>\n  str.replace(/[&<>"']/g,c=>({\n    '&':'&amp;','<':'&lt;',\n    '>':'&gt;','"':'&quot;',\n    "'":'&#x27;'\n  }[c]));`},
+  {num:'06',cat:'ASYNC',title:'Concurrency Control',desc:'Process thousands of tasks without overwhelming APIs. Batch with configurable concurrency.',code:`async function pLimit(tasks,n){\n  const results=[];\n  for(let i=0;i<tasks.length;i+=n){\n    const batch=tasks.slice(i,i+n);\n    results.push(...await Promise.all(\n      batch.map(t=>t())\n    ));\n  }\n  return results;\n}`},
+  {num:'07',cat:'CSS',title:'Perfect Centering',desc:'All the ways to center elements in CSS. Flexbox, Grid and absolute positioning.',code:`/* Flexbox */\n.center{display:flex;align-items:center;justify-content:center;}\n\n/* Grid */\n.center{display:grid;place-items:center;}\n\n/* Absolute */\n.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}`},
+  {num:'08',cat:'REACT',title:'Custom useLocalStorage Hook',desc:'Persist React state to localStorage. Handles JSON parsing and SSR safely.',code:`function useLocalStorage(key,init){\n  const[val,setVal]=useState(()=>{\n    try{return JSON.parse(localStorage.getItem(key))??init;}\n    catch{return init;}\n  });\n  useEffect(()=>{\n    localStorage.setItem(key,JSON.stringify(val));\n  },[key,val]);\n  return[val,setVal];\n}`},
+  {num:'09',cat:'NODE.JS',title:'Async Error Wrapper',desc:'Eliminate try/catch boilerplate in Express route handlers.',code:`const wrap=fn=>(...args)=>\n  Promise.resolve(fn(...args)).catch(args[2]);\n\n// Usage\napp.get('/users',wrap(async(req,res)=>{\n  const users=await db.findAll();\n  res.json(users);\n}));`},
+  {num:'10',cat:'TYPESCRIPT',title:'Generic API Response Type',desc:'Type-safe API responses with generics. Works with React Query and SWR.',code:`type ApiResponse<T>=\n  |{success:true;data:T;}\n  |{success:false;error:string;};\n\nasync function fetchAPI<T>(url:string):\n  Promise<ApiResponse<T>>{\n  try{\n    const r=await fetch(url);\n    const data=await r.json() as T;\n    return{success:true,data};\n  }catch(e){\n    return{success:false,error:String(e)};\n  }\n}`},
+  {num:'11',cat:'CSS',title:'Smooth Scroll Progress Bar',desc:'Show page scroll progress with pure CSS and a tiny JS snippet.',code:`/* CSS */\n.progress-bar{\n  position:fixed;top:0;left:0;\n  height:3px;background:var(--accent);\n  transform-origin:left;\n  transform:scaleX(0);\n}\n\n/* JS */\nwindow.addEventListener('scroll',()=>{\n  const p=window.scrollY/\n    (document.body.scrollHeight-innerHeight);\n  progressBar.style.transform=\`scaleX(\${p})\`;\n});`},
+  {num:'12',cat:'NETWORK',title:'Retry with Exponential Backoff',desc:'Automatically retry failed API calls with increasing delays.',code:`async function fetchWithRetry(url,n=3){\n  for(let i=0;i<n;i++){\n    try{return await fetch(url);}\n    catch(e){\n      if(i===n-1) throw e;\n      await new Promise(r=>setTimeout(r,2**i*1000));\n    }\n  }\n}`},
+  {num:'13',cat:'REGEX',title:'Common Validation Patterns',desc:'Battle-tested regex patterns for email, URL, phone and password validation.',code:`const PATTERNS={\n  email:/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/,\n  url:/^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)$/,\n  phone:/^\\+?[1-9]\\d{1,14}$/,\n  strong:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$/\n};`},
+  {num:'14',cat:'DOCKER',title:'Multi-stage Node.js Dockerfile',desc:'Production-optimised Docker image. Small final image using multi-stage builds.',code:`FROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --only=production\nCOPY . .\n\nFROM node:20-alpine AS runner\nWORKDIR /app\nCOPY --from=builder /app .\nEXPOSE 3000\nCMD ["node","server.js"]`},
+  {num:'15',cat:'GIT',title:'Useful Git Aliases',desc:'Speed up your Git workflow with these battle-tested aliases.',code:`git config --global alias.co checkout\ngit config --global alias.br branch\ngit config --global alias.st status\ngit config --global alias.lg "log --oneline --graph --all"\ngit config --global alias.undo "reset --soft HEAD~1"\ngit config --global alias.save "stash push -m"`},
+  {num:'16',cat:'PYTHON',title:'FastAPI Quick Start',desc:'Complete FastAPI boilerplate with Pydantic models and async endpoints.',code:`from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp=FastAPI()\n\nclass Item(BaseModel):\n  name:str\n  price:float\n\n@app.get("/items/{id}")\nasync def get_item(id:int):\n  return{"id":id,"name":"Widget"}\n\n@app.post("/items")\nasync def create_item(item:Item):\n  return item`},
+  {num:'17',cat:'DATABASES',title:'Efficient Indexing Strategy',desc:'Index columns used in WHERE, JOIN, and ORDER BY. Avoid over-indexing.',code:`-- Create index on frequently queried column\nCREATE INDEX idx_users_email ON users(email);\n\n-- Composite index for common query pattern\nCREATE INDEX idx_posts_user_date\n  ON posts(user_id, created_at DESC);\n\n-- Partial index for active records\nCREATE INDEX idx_active_users\n  ON users(email) WHERE active=true;`},
+  {num:'18',cat:'SECURITY',title:'Content Security Policy',desc:'Prevent XSS with a strong CSP header. Whitelist only trusted sources.',code:`// Express.js\napp.use((req,res,next)=>{\n  res.setHeader('Content-Security-Policy',\n    "default-src 'self'; "+\n    "script-src 'self' 'nonce-"+nonce+"'; "+\n    "style-src 'self' 'unsafe-inline'; "+\n    "img-src 'self' data: https:; "+\n    "connect-src 'self' https://api.example.com"\n  );\n  next();\n});`},
+];
+
+function renderSolutions(count){
+  const grid = document.getElementById('solGrid');
+  grid.innerHTML='';
+  document.getElementById('solCount').textContent=SOLUTIONS.length+' SOLUTIONS';
+  SOLUTIONS.slice(0,count).forEach(s=>{
+    const c=document.createElement('div');
+    c.className='sol-card'; c.setAttribute('data-num',s.num);
+    c.innerHTML=`<div class="sol-cat">${s.cat}</div><div class="sol-title">${s.title}</div><div class="sol-desc">${s.desc}</div><div class="sol-code">${s.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+    grid.appendChild(c);
+  });
+}
+renderSolutions(solShown);
+
+// ── MARQUEE DATA ──
+const M_DATA = [
+  ...ALL_APIS.map(a=>({icon:ICONS.api,label:a.t,dot:'free'})),
+  ...ALL_AI.slice(0,40).map(a=>({icon:ICONS.ai,label:a.t,dot:'ai'})),
+  ...ALL_DEV.slice(0,40).map(d=>({icon:d.icon==='db'?ICONS.db:d.icon==='design'?ICONS.design:ICONS.dev,label:d.t,dot:'free'})),
+];
+function shuffle(arr){return arr.sort(()=>Math.random()-.5);}
+const shuffled = shuffle([...M_DATA]);
+const ROWS = [
+  shuffled.slice(0,40),
+  shuffled.slice(40,80),
+  shuffled.slice(80,120),
+  shuffled.slice(120,160),
+];
+function buildMarquee(rowId, pills){
+  const row=document.getElementById(rowId);
+  if(!row) return;
+  [1,2].forEach(()=>{
+    const inner=document.createElement('div');
+    inner.className='marquee-inner';
+    pills.forEach(p=>{
+      const el=document.createElement('div');
+      el.className='pill';
+      el.innerHTML=`${p.icon}<span class="pill-label">${p.label}</span><span class="pill-dot ${p.dot}"></span>`;
+      el.onclick=()=>quickSearch(p.label);
+      inner.appendChild(el);
+    });
+    row.appendChild(inner);
+  });
+}
+ROWS.forEach((r,i)=>buildMarquee('mRow'+(i+1),r));
+
+// ── SEARCH ── (built lazily after all data is defined)
+let SEARCH_DB = null;
+function getSearchDB(){
+  if(!SEARCH_DB){
+    SEARCH_DB = [
+      ...ALL_APIS.map(a=>({...a, type:'FREE API',  key:'api'})),
+      ...ALL_AI.map(a=> ({...a, type:'AI TOOL',   key:'ai'})),
+      ...ALL_DEV.map(d=>({...d, type:'DEV TOOL',  key:'dev'})),
+    ];
+  }
+  return SEARCH_DB;
+}
+
+function doSearch(){
+  const rawQ = document.getElementById('searchInput').value.trim();
+  const q = rawQ.toLowerCase();
+  const sr = document.getElementById('search-results');
+  const grid = document.getElementById('resultGrid');
+  const header = document.getElementById('resultHeader');
+
+  if(!q){ sr.style.display='none'; return; }
+
+  const db = getSearchDB();
+  let results = db.filter(item=>{
+    const title  = (item.t||item.title||'').toLowerCase();
+    const desc   = (item.d||item.desc||'').toLowerCase();
+    const cat    = (item.cat||'').toLowerCase();
+    const type   = (item.type||'').toLowerCase();
+    const tags   = (item.tags||[]).map(t=>t.toLowerCase());
+    return title.includes(q) || desc.includes(q) || cat.includes(q) || type.includes(q) || tags.some(t=>t.includes(q));
+  });
+
+  if(!results.length){
+    // fuzzy fallback – first word only
+    const word = q.split(' ')[0];
+    results = db.filter(item=>(item.t||'').toLowerCase().includes(word));
+  }
+  if(!results.length) results = db.slice(0,6); // show something always
+
+  grid.innerHTML='';
+  header.textContent=`// ${results.length} RESULT${results.length!==1?'S':''} FOR "${rawQ.toUpperCase()}"`;
+
+  results.slice(0,12).forEach((item,idx)=>{
+    const badge  = item.b || item.badge || 'free';
+    const title  = item.t || item.title || '';
+    const desc   = item.d || item.desc  || '';
+    const url    = item.u || item.url   || '#';
+    const tags   = item.tags || [];
+    const itype  = item.icon || (badge==='ai'?'ai':item.key==='dev'?'dev':'api');
+
+    const c = document.createElement('div');
+    c.className = 'r-card';
+    c.style.animationDelay = (idx*0.04)+'s';
+    c.innerHTML = `
+      <div class="card-top">
+        <div class="card-icon">${makeIcon(itype)}</div>
+        <span class="card-badge badge-${badge}">${item.type}</span>
+      </div>
+      <div class="card-title">${title}</div>
+      <div class="card-desc">${desc}</div>
+      <div class="card-foot">
+        <div class="card-tags">${tags.map(t=>`<span class="c-tag">${t}</span>`).join('')}</div>
+        <span class="card-arrow">→</span>
+      </div>`;
+    if(url && url!=='#') c.onclick=()=>window.open(url,'_blank');
+    grid.appendChild(c);
+  });
+
+  sr.style.display='block';
+  sr.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function quickSearch(term){
+  const inp = document.getElementById('searchInput');
+  inp.value = term;
+  doSearch();
+  inp.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// ── CHAT ──
+const CHAT_BOTS=[
+  {n:'dev_zak',c:'#00BFFF'},
+  {n:'code_nia',c:'#C6A85C'},
+  {n:'px_ludo',c:'#39ff14'},
+  {n:'techZM',c:'#a78bfa'},
+  {n:'anicade_bot',c:'#00BFFF'},
+];
+const BOT_MSGS=[
+  'Has anyone tried the Groq API? Speed is insane.',
+  'Just discovered Hono for edge functions — way faster than Express.',
+  "ANICADE Tech Browser is 🔥 — found exactly what I needed.",
+  'Tip: use cursor-based pagination, way faster than OFFSET.',
+  'Bun 1.1 is stable and SO much faster than Node.',
+  'Anyone building with HTMX? No React needed.',
+  'Reminder: sanitise your inputs, always.',
+  'Zod + tRPC = type safety end-to-end. 10/10',
+  'Found a bug? Check CORS headers first. Always.',
+  'Collab Hub is live! Go build something together.',
+  'Pro tip: Biome replaces ESLint + Prettier in one tool.',
+  'Just pushed to prod with GitHub Actions — zero config.',
+  'Supabase free tier is genuinely crazy good.',
+  'Ollama lets you run LLMs offline. Try it!',
+  'Anyone else using Drizzle ORM? Prisma killer?',
+];
+
+let chatOnline = Math.floor(Math.random()*40)+12;
+document.getElementById('chatOnline').textContent=`● ${chatOnline} online`;
+
+function getTime(){return new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+
+function addMsg(name,text,color,mine=false){
+  const msgs=document.getElementById('chatMsgs');
+  const initials=name.substring(0,2).toUpperCase();
+  const d=document.createElement('div');
+  d.className='msg'+(mine?' mine':'');
+  d.innerHTML=`<div class="msg-avatar" style="background:${color}22;color:${color}">${initials}</div><div class="msg-body"><div class="msg-name" style="color:${color}">${name}</div><div class="msg-text">${text}</div><div class="msg-time">${getTime()}</div></div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+// Seed messages
+setTimeout(()=>addMsg(CHAT_BOTS[0].n,'Welcome to ANICADE Tech Browser! 1000+ resources at your fingertips.',CHAT_BOTS[0].c),500);
+setTimeout(()=>addMsg(CHAT_BOTS[1].n,BOT_MSGS[0],CHAT_BOTS[1].c),2500);
+setTimeout(()=>addMsg(CHAT_BOTS[2].n,BOT_MSGS[1],CHAT_BOTS[2].c),5000);
+setInterval(()=>{
+  const b=CHAT_BOTS[Math.floor(Math.random()*CHAT_BOTS.length)];
+  const m=BOT_MSGS[Math.floor(Math.random()*BOT_MSGS.length)];
+  addMsg(b.n,m,b.c);
+  chatOnline=Math.max(8,chatOnline+(Math.random()>.5?1:-1));
+  document.getElementById('chatOnline').textContent=`● ${chatOnline} online`;
+},12000);
+
+function sendChat(){
+  const inp=document.getElementById('chatInput');
+  const v=inp.value.trim();
+  if(!v) return;
+  const u=JSON.parse(localStorage.getItem('anicade_user')||'{}');
+  const name=u.name||'Dev_User';
+  addMsg(name,v,'#00BFFF',true);
+  inp.value='';
+}
+document.getElementById('chatInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') sendChat();
+});
+
+// ── MODALS ──
+function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id);}));
+function openSubscribe(name,price){
+  document.getElementById('planName').textContent=name;
+  document.getElementById('planPrice').textContent=price;
+  openModal('subscribeModal');
+}
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='signin')||(i===1&&tab==='signup')));
+  document.getElementById('tab-signin').classList.toggle('active',tab==='signin');
+  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
+}
+function togglePwd(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
+function checkStr(input){
+  const v=input.value,f=document.getElementById('strFill');
+  let s=0;
+  if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
+  const c=['#ff4444','#f59e0b','#39ff14','#00BFFF'];
+  f.style.width=(s*25)+'%';f.style.background=c[s-1]||'transparent';
+}
+function handleLogin(){
+  const e=document.getElementById('siEmail').value;
+  if(!e){showToast('⚠️','Enter your email');return;}
+  closeModal('loginModal');
+  showToast('✓','Signed in successfully!');
+}
+function handleSignup(){
+  const e=document.getElementById('suEmail').value,p=document.getElementById('suPass').value,a=document.getElementById('suTerms').checked;
+  if(!e||!p){showToast('⚠️','Fill all fields');return;}
+  if(!a){showToast('⚠️','Accept the terms');return;}
+  closeModal('loginModal');
+  showToast('✓','Account created! Visit auth.html for your profile.');
+}
+function handleSubscribe(){
+  const a=document.getElementById('subTerms').checked;
+  if(!a){showToast('⚠️','Accept the terms');return;}
+  closeModal('subscribeModal');
+  showToast('🎉','Subscription sent! Check WhatsApp for next steps.');
+}
+function showToast(icon,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastIcon').textContent=icon;
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// Populate country selects
+populateCountrySelects();
+
+// Load user data if logged in
+const savedUser = localStorage.getItem('anicade_user');
+if(savedUser){
+  const u=JSON.parse(savedUser);
+  if(u.timezone) currentTZ=u.timezone;
+}
+</script>
+</body>
+</html>
