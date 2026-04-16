@@ -5,10 +5,10 @@
 
 // ── CONFIG ──────────────────────────────
 const AT_CONFIG = {
-  USERS_BIN  : '69b14c5bc3097a1dd5173665',
+  USERS_BIN  : '69e15a7836566621a8bfacda',
   JSONBIN_BASE: 'https://api.jsonbin.io/v3/b',
-  MASTER_KEY_LS: 'anicade_jb_master',
-  SESSION_KEY  : 'anicade_session',
+  MASTER_KEY_LS: '$2a$10$VJXQzwtVgNhMTIJiiQvpy.hG7XaRD0.H42NyZhKzeLRungeekMmpO',
+  SESSION_KEY  : '$2a$10$VJXQzwtVgNhMTIJiiQvpy.hG7XaRD0.H42NyZhKzeLRungeekMmpO',
   LOGIN_PAGE   : 'login.html',
 };
 
