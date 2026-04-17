@@ -2,7 +2,7 @@
  * ANICADE Tech Browser — Auth, Bots & Utilities v2.0
  */
 
-// ── ENCRYPTED ADMIN (Levelraptor You can't Hack this!) ──
+// ── ENCRYPTED ADMIN DATA (Levelraptor You can't Hack this!) ──
 (function _a() {
   const _e = [97,110,105,99,97,100,101,116,101,99,104,64,103,109,97,105,108,46,99,111,109];
   const _p = [75,114,115,116,101,110,50,48,52,52];
