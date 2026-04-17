@@ -14,7 +14,7 @@
 const AT_CFG = {
   USERS_BIN: '69e20511aaba8821970be2cd',
   JB_BASE: 'https://api.jsonbin.io/v3/b',
-  MK_LS: 'anicade_jb_master',
+  MK_LS: '$2a$10$VJXQzwtVgNhMTIJiiQvpy.hG7XaRD0.H42NyZhKzeLRungeekMmpO',
   SESSION: 'anicade_session',
   LOGIN: 'login.html',
 };
