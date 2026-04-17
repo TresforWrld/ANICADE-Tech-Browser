@@ -14,10 +14,10 @@
 //  Presence bin initial value:{ "sessions": {} }
 // ════════════════════════════════════════════════════════
 const AT_SYNC_BINS = {
-  CHAT    : '69b14c5bc3097a1dd5173666',  // REPLACE with your chat bin ID
-  ROOMS   : '69b14c5bc3097a1dd5173667',  // REPLACE with your rooms bin ID
-  PROJECTS: '69b14c5bc3097a1dd5173668',  // REPLACE with your projects bin ID
-  PRESENCE: '69b14c5bc3097a1dd5173669',  // REPLACE with your presence bin ID
+  CHAT    : 69e1fff636566621a8c2797f',  // REPLACE with your chat bin ID
+  ROOMS   : '69e200e536566621a8c27e00',  // REPLACE with your rooms bin ID
+  PROJECTS: '69e2014faaba8821970bd066',  // REPLACE with your projects bin ID
+  PRESENCE: '69e201ea856a682189439c00',  // REPLACE with your presence bin ID
 };
 
 // ════════════════════════════════════════════════════════
