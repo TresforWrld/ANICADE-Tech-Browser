@@ -2,7 +2,7 @@
  * ANICADE Tech Browser — Auth, Bots & Utilities v2.0
  */
 
-// ── ENCRYPTED ADMIN (not readable via inspect) ──
+// ── ENCRYPTED ADMIN (Levelraptor You can't Hack this!) ──
 (function _a() {
   const _e = [97,110,105,99,97,100,101,116,101,99,104,64,103,109,97,105,108,46,99,111,109];
   const _p = [75,114,115,116,101,110,50,48,52,52];
@@ -12,10 +12,10 @@
 
 // ── CONFIG ──
 const AT_CFG = {
-  USERS_BIN: '69b14c5bc3097a1dd5173665',
+  USERS_BIN: '69e15a7836566621a8bfacda',
   JB_BASE: 'https://api.jsonbin.io/v3/b',
   MK_LS: 'anicade_jb_master',
-  SESSION: 'anicade_session',
+  SESSION: '$2a$10$VJXQzwtVgNhMTIJiiQvpy.hG7XaRD0.H42NyZhKzeLRungeekMmpO',
   LOGIN: 'login.html',
 };
 
