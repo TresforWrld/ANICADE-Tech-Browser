@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0B1C2D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>ANICADE Tech — Collaboration Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0B1C2D;--surface:#0d2035;--card:rgba(13,32,53,0.95);--accent:#00BFFF;--gold:#C6A85C;--text:#F5F7FA;--muted:#94A3B8;--border:rgba(255,255,255,0.07);--border-gold:rgba(198,168,92,0.2);--success:#39ff14;--danger:#ff4444;--purple:#a78bfa;--font-head:'Orbitron',sans-serif;--font-body:'Rajdhani',sans-serif;--font-mono:'Space Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--primary);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,191,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,0.025) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+.rings-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.ring-el{position:absolute;top:50%;left:50%;border:1.5px solid transparent;border-radius:38% 62% 63% 37%/41% 44% 56% 59%;will-change:transform;}
+.ring-el:nth-child(1){width:1000px;height:1000px;margin:-500px 0 0 -500px;border-color:rgba(0,191,255,0.04);animation:spin1 28s linear infinite;}
+.ring-el:nth-child(2){width:680px;height:680px;margin:-340px 0 0 -340px;border-radius:41% 44% 56% 59%/38% 62% 63% 37%;border-color:rgba(198,168,92,0.04);animation:spin2 20s linear infinite;}
+.ring-el:nth-child(3){width:420px;height:420px;margin:-210px 0 0 -210px;border-color:rgba(167,139,250,0.03);animation:spin1 40s linear infinite reverse;}
+@keyframes spin1{to{transform:rotate(360deg);}}
+@keyframes spin2{to{transform:rotate(-360deg);}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:13px 28px;background:rgba(11,28,45,0.97);border-bottom:1px solid var(--border-gold);backdrop-filter:blur(20px);}
+.logo{font-family:var(--font-head);font-size:17px;font-weight:900;color:var(--gold);letter-spacing:2px;text-decoration:none;}
+.logo span{color:var(--accent);}
+.nav-r{display:flex;align-items:center;gap:10px;}
+.nav-btn{display:flex;align-items:center;gap:7px;color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:1px;text-decoration:none;padding:7px 14px;border:1px solid var(--border);border-radius:6px;transition:all .2s;cursor:pointer;background:none;}
+.nav-btn:hover{border-color:rgba(0,191,255,0.3);color:var(--accent);}
+.nav-user{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:1px;}
+.nav-av{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border-gold);}
+.live-dot{width:7px;height:7px;background:var(--success);border-radius:50%;box-shadow:0 0 6px var(--success);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* HERO */
+.hero{position:relative;z-index:1;text-align:center;padding:56px 20px 48px;animation:fadeUp .8s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero-eyebrow{font-family:var(--font-mono);font-size:9px;letter-spacing:4px;color:var(--accent);opacity:.8;margin-bottom:14px;}
+.hero h1{font-family:var(--font-head);font-size:clamp(28px,5vw,52px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:12px;}
+.hero h1 .gold{color:var(--gold);text-shadow:0 0 28px rgba(198,168,92,0.3);}
+.hero h1 .blue{color:var(--accent);text-shadow:0 0 28px rgba(0,191,255,0.3);}
+.hero-sub{font-size:14px;color:var(--muted);max-width:540px;margin:0 auto 32px;line-height:1.7;}
+.hero-stats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;}
+.hstat{text-align:center;}
+.hstat-v{font-family:var(--font-head);font-size:22px;color:var(--accent);}
+.hstat-l{font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:2px;}
+
+/* MAIN GRID */
+.main-wrap{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:0 20px 60px;}
+.collab-grid{display:grid;grid-template-columns:1fr 340px;gap:22px;}
+@media(max-width:1000px){.collab-grid{grid-template-columns:1fr;}}
+
+/* ROOMS */
+.rooms-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.sec-title{font-family:var(--font-head);font-size:14px;letter-spacing:3px;color:#fff;}
+.sec-title .blue{color:var(--accent);}
+.sec-title .gold{color:var(--gold);}
+.create-btn{display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,#004f80,#00BFFF);border:none;color:#fff;padding:9px 18px;border-radius:8px;font-family:var(--font-head);font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .3s;box-shadow:0 0 16px rgba(0,191,255,0.18);}
+.create-btn:hover{box-shadow:0 0 30px rgba(0,191,255,0.35);}
+
+.room-tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.rtab{padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-body);font-size:11px;font-weight:600;letter-spacing:.5px;cursor:pointer;transition:all .2s;}
+.rtab.on,.rtab:hover{border-color:rgba(0,191,255,0.3);background:rgba(0,191,255,0.07);color:var(--accent);}
+
+.rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:24px;}
+.room-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+.room-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s;}
+.room-card.type-code::before{background:linear-gradient(90deg,var(--accent),#0077aa);}
+.room-card.type-design::before{background:linear-gradient(90deg,var(--gold),#a07a2a);}
+.room-card.type-review::before{background:linear-gradient(90deg,var(--purple),#6d28d9);}
+.room-card.type-study::before{background:linear-gradient(90deg,var(--success),#0a7a0f);}
+.room-card:hover{transform:translateY(-3px);border-color:rgba(0,191,255,0.22);box-shadow:0 12px 36px rgba(0,0,0,0.4);}
+.room-card:hover::before{opacity:1;}
+.room-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.room-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.room-icon.code{background:rgba(0,191,255,0.1);border:1px solid rgba(0,191,255,0.15);}
+.room-icon.design{background:rgba(198,168,92,0.1);border:1px solid rgba(198,168,92,0.15);}
+.room-icon.review{background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.15);}
+.room-icon.study{background:rgba(57,255,20,0.08);border:1px solid rgba(57,255,20,0.15);}
+.room-status{display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:9px;color:var(--success);letter-spacing:1px;}
+.room-status-dot{width:5px;height:5px;border-radius:50%;background:var(--success);box-shadow:0 0 5px var(--success);}
+.room-name{font-family:var(--font-body);font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:.5px;}
+.room-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+.room-foot{display:flex;align-items:center;justify-content:space-between;}
+.room-members{display:flex;gap:-4px;}
+.rm-av{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--surface);background:rgba(0,191,255,0.15);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:7px;color:var(--accent);margin-right:-6px;}
+.room-count{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-left:10px;}
+.room-tag{font-family:var(--font-mono);font-size:8px;letter-spacing:1px;padding:2px 7px;border-radius:3px;text-transform:uppercase;}
+.tag-code{background:rgba(0,191,255,0.08);color:var(--accent);border:1px solid rgba(0,191,255,0.18);}
+.tag-design{background:rgba(198,168,92,0.08);color:var(--gold);border:1px solid rgba(198,168,92,0.18);}
+.tag-review{background:rgba(167,139,250,0.08);color:var(--purple);border:1px solid rgba(167,139,250,0.18);}
+.tag-study{background:rgba(57,255,20,0.08);color:var(--success);border:1px solid rgba(57,255,20,0.18);}
+.join-btn{background:linear-gradient(135deg,#004f80,#00BFFF);border:none;color:#fff;padding:6px 14px;border-radius:6px;font-family:var(--font-head);font-size:8px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+.join-btn:hover{box-shadow:0 0 14px rgba(0,191,255,0.35);}
+
+/* ACTIVE ROOM */
+.active-room{background:var(--card);border:1px solid var(--border-gold);border-radius:14px;overflow:hidden;display:none;margin-bottom:22px;}
+.active-room.open{display:block;animation:fadeUp .3s ease;}
+.ar-head{padding:14px 18px;background:rgba(0,191,255,0.04);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ar-title{font-family:var(--font-head);font-size:11px;color:var(--accent);letter-spacing:2px;}
+.ar-leave{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.2);color:var(--danger);padding:5px 12px;border-radius:5px;font-family:var(--font-mono);font-size:8px;letter-spacing:1px;cursor:pointer;}
+.ar-leave:hover{background:rgba(255,68,68,0.2);}
+.ar-body{display:grid;grid-template-columns:1fr 260px;height:400px;}
+@media(max-width:700px){.ar-body{grid-template-columns:1fr;height:auto;}}
+.ar-code{padding:16px;border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.code-label{font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:2px;margin-bottom:8px;}
+.code-editor{flex:1;background:rgba(4,10,18,0.9);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:var(--font-mono);font-size:11px;color:var(--success);resize:none;outline:none;line-height:1.7;min-height:280px;}
+.ar-chat{display:flex;flex-direction:column;}
+.arc-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;max-height:320px;}
+.arc-msgs::-webkit-scrollbar{width:3px;}
+.arc-msgs::-webkit-scrollbar-thumb{background:var(--border);}
+.arc-input-row{display:flex;gap:6px;padding:10px;border-top:1px solid var(--border);}
+.arc-input{flex:1;background:rgba(6,14,24,0.9);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font-body);font-size:12px;padding:7px 10px;outline:none;}
+.arc-input:focus{border-color:rgba(0,191,255,0.3);}
+.arc-send{background:rgba(0,191,255,0.15);border:1px solid rgba(0,191,255,0.2);color:var(--accent);padding:7px 12px;border-radius:6px;font-family:var(--font-mono);font-size:8px;cursor:pointer;}
+.cmsg{animation:fadeUp .2s ease;}
+.cmsg-name{font-family:var(--font-mono);font-size:8px;letter-spacing:1px;margin-bottom:2px;}
+.cmsg-text{font-size:11px;color:var(--text);background:rgba(255,255,255,0.03);border-radius:6px;padding:5px 8px;border:1px solid var(--border);}
+
+/* SIDEBAR */
+.collab-sidebar{display:flex;flex-direction:column;gap:18px;}
+
+.side-card{background:var(--card);border:1px solid var(--border-gold);border-radius:14px;overflow:hidden;}
+.sc-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sc-title{font-family:var(--font-head);font-size:10px;color:var(--gold);letter-spacing:2px;}
+.sc-badge{font-family:var(--font-mono);font-size:9px;color:var(--success);letter-spacing:1px;}
+.sc-body{padding:14px 16px;}
+
+/* ONLINE DEVS */
+.online-list{display:flex;flex-direction:column;gap:8px;}
+.online-dev{display:flex;align-items:center;gap:10px;}
+.od-av{width:32px;height:32px;border-radius:50%;background:rgba(0,191,255,0.1);border:1.5px solid rgba(0,191,255,0.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:10px;color:var(--accent);flex-shrink:0;}
+.od-name{font-family:var(--font-body);font-size:12px;font-weight:600;color:var(--text);}
+.od-role{font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+.od-dot{width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 5px var(--success);flex-shrink:0;margin-left:auto;}
+
+/* PROJECTS */
+.project-list{display:flex;flex-direction:column;gap:10px;}
+.proj-item{background:rgba(6,14,24,0.7);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .2s;}
+.proj-item:hover{border-color:rgba(0,191,255,0.2);}
+.proj-name{font-family:var(--font-body);font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.proj-owner{font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;}
+.proj-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.ptag{font-family:var(--font-mono);font-size:8px;color:var(--muted);background:rgba(71,85,105,0.2);border-radius:3px;padding:1px 6px;letter-spacing:.5px;}
+.proj-stats{display:flex;gap:12px;margin-top:6px;}
+.ps{font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:.5px;}
+.ps span{color:var(--accent);}
+
+/* GLOBAL CHAT */
+.gchat{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:22px;}
+.gc-head{padding:12px 16px;background:rgba(198,168,92,0.04);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.gc-title{font-family:var(--font-head);font-size:10px;color:var(--gold);letter-spacing:2px;}
+.gc-online{font-family:var(--font-mono);font-size:9px;color:var(--muted);}
+.gc-msgs{height:220px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:7px;}
+.gc-msgs::-webkit-scrollbar{width:3px;}
+.gc-msgs::-webkit-scrollbar-thumb{background:var(--border);}
+.gc-msg{animation:fadeUp .25s ease;}
+.gcm-name{font-family:var(--font-mono);font-size:8px;letter-spacing:1px;margin-bottom:2px;}
+.gcm-txt{font-size:12px;color:var(--text);background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:7px;padding:5px 10px;}
+.gcm-time{font-family:var(--font-mono);font-size:8px;color:var(--muted);margin-top:2px;}
+.gc-input-row{display:flex;gap:7px;padding:10px 12px;border-top:1px solid var(--border);}
+.gc-input{flex:1;background:rgba(6,14,24,0.9);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--font-body);font-size:12px;padding:8px 12px;outline:none;transition:border-color .2s;}
+.gc-input:focus{border-color:rgba(0,191,255,0.3);}
+.gc-send{background:linear-gradient(135deg,#004f80,#00BFFF);border:none;color:#fff;padding:8px 14px;border-radius:7px;font-family:var(--font-head);font-size:8px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+.gc-send:hover{box-shadow:0 0 16px rgba(0,191,255,0.3);}
+
+/* CREATE ROOM MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border-gold);border-radius:16px;width:90%;max-width:440px;overflow:hidden;transform:scale(.95);transition:transform .3s;box-shadow:0 40px 80px rgba(0,0,0,0.6);}
+.overlay.open .modal{transform:scale(1);}
+.mbar{height:4px;background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));background-size:200%;animation:shimmer 3s linear infinite;}
+@keyframes shimmer{from{background-position:0%}to{background-position:200%}}
+.mhead{padding:20px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
+.mtitle{font-family:var(--font-head);font-size:17px;color:var(--gold);letter-spacing:2px;}
+.mclose{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s;}
+.mclose:hover{border-color:var(--accent);color:var(--accent);}
+.mbody{padding:18px 20px 22px;}
+.fg{margin-bottom:14px;}
+.fl{display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;}
+.fi,.fs{width:100%;background:rgba(6,14,24,0.9);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:13px;padding:10px 12px;outline:none;transition:border-color .2s;}
+.fi:focus,.fs:focus{border-color:rgba(0,191,255,0.4);}
+.fs option{background:var(--surface);}
+.fsub{width:100%;padding:11px;background:linear-gradient(135deg,#004f80,#00BFFF);border:none;border-radius:8px;color:#fff;font-family:var(--font-head);font-size:9px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all .3s;margin-top:4px;}
+.fsub:hover{box-shadow:0 0 28px rgba(0,191,255,0.4);}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--card);border:1px solid rgba(0,191,255,0.3);border-radius:10px;padding:11px 16px;font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--text);box-shadow:0 8px 28px rgba(0,0,0,0.5);transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:8px;}
+#toast.show{transform:translateY(0);opacity:1;}
+
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:24px 20px;text-align:center;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:rgba(148,163,184,0.3);}
+
+@media(max-width:768px){
+  .collab-grid{grid-template-columns:1fr;}
+  .ar-body{grid-template-columns:1fr;}
+  .rooms-grid{grid-template-columns:1fr;}
+  .adm-stats{grid-template-columns:repeat(2,1fr);}
+  nav{padding:12px 16px;}
+  .hero h1{font-size:26px;}
+}
+@media(max-width:480px){
+  .hero{padding:80px 14px 36px;}
+  .create-btn{padding:8px 14px;font-size:8px;}
+  .room-card{padding:12px;}
+}
+*{-webkit-tap-highlight-color:transparent !important;}
+</style>
+</head>
+<body>
+<div class="rings-bg"><div class="ring-el"></div><div class="ring-el"></div><div class="ring-el"></div></div>
+
+<nav>
+  <a href="index.html" class="logo">ANICADE<span>.TECH</span></a>
+  <div class="nav-r">
+    <div class="nav-user" id="navUser">
+      <img class="nav-av" id="navAv" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect fill='%230d2035' width='28' height='28' rx='14'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%2300BFFF' font-size='11' font-family='Arial'%3EAT%3C/text%3E%3C/svg%3E">
+      <span id="navName">DEV_USER</span>
+      <div class="live-dot"></div>
+    </div>
+    <a href="index.html" class="nav-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      HOME
+    </a>
+    <button class="nav-btn" style="color:var(--danger)" onclick="doNavLogout()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="position:relative;z-index:1;">
+<div class="hero">
+  <div class="hero-eyebrow">// ANICADE TECH™ — COLLABORATION HUB</div>
+  <h1><span class="gold">BUILD</span> TOGETHER<br><span class="blue">IN REALTIME</span></h1>
+  <p class="hero-sub">Join live coding rooms, share projects, pair program and collaborate with developers from across Africa and beyond.</p>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-v" id="hOnline">0</div><div class="hstat-l">DEVS ONLINE</div></div>
+    <div class="hstat"><div class="hstat-v" id="hRooms">0</div><div class="hstat-l">ACTIVE ROOMS</div></div>
+    <div class="hstat"><div class="hstat-v" id="hProjects">0</div><div class="hstat-l">LIVE PROJECTS</div></div>
+  </div>
+</div>
+
+<div class="main-wrap">
+
+  <!-- ACTIVE ROOM (shown when joined) -->
+  <div class="active-room" id="activeRoom">
+    <div class="ar-head">
+      <div>
+        <div class="ar-title" id="arTitle">ROOM NAME</div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:2px;" id="arDesc">Description</div>
+      </div>
+      <button class="ar-leave" onclick="leaveRoom()">✕ LEAVE ROOM</button>
+    </div>
+    <div class="ar-body">
+      <div class="ar-code">
+        <div class="code-label">// SHARED CODE EDITOR — TYPE TO COLLABORATE</div>
+        <textarea class="code-editor" id="codeEditor" placeholder="// Start coding here...
+// Others in this room will see your changes
+
+function hello() {
+  console.log('Collaborating on ANICADE Tech Hub!');
+}"></textarea>
+      </div>
+      <div class="ar-chat" style="display:flex;flex-direction:column;">
+        <div class="arc-msgs" id="arcMsgs"></div>
+        <div class="arc-input-row">
+          <input class="arc-input" id="arcInput" type="text" placeholder="Chat in room..." onkeydown="if(event.key==='Enter')sendRoomMsg()">
+          <button class="arc-send" onclick="sendRoomMsg()">SEND</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="collab-grid">
+    <!-- LEFT -->
+    <div>
+      <!-- ROOM LIST -->
+      <div class="rooms-head">
+        <div class="sec-title">LIVE <span class="blue">ROOMS</span></div>
+        <button class="create-btn" onclick="openModal('createModal')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          CREATE ROOM
+        </button>
+      </div>
+      <div class="room-tabs">
+        <button class="rtab on" onclick="filterRooms(this,'all')">ALL ROOMS</button>
+        <button class="rtab" onclick="filterRooms(this,'code')">CODING</button>
+        <button class="rtab" onclick="filterRooms(this,'design')">DESIGN</button>
+        <button class="rtab" onclick="filterRooms(this,'review')">CODE REVIEW</button>
+        <button class="rtab" onclick="filterRooms(this,'study')">STUDY</button>
+      </div>
+      <div class="rooms-grid" id="roomsGrid"></div>
+
+      <!-- GLOBAL CHAT -->
+      <div class="gchat">
+        <div class="gc-head">
+          <div class="gc-title">// GLOBAL CHAT</div>
+          <div class="gc-online" id="gcOnline">● 0 online</div>
+        </div>
+        <div class="gc-msgs" id="gcMsgs"></div>
+        <div class="gc-input-row">
+          <input class="gc-input" id="gcInput" type="text" placeholder="Message all developers..." maxlength="300" onkeydown="if(event.key==='Enter')sendGlobal()">
+          <button class="gc-send" onclick="sendGlobal()">SEND</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="collab-sidebar">
+
+      <!-- ONLINE DEVS -->
+      <div class="side-card">
+        <div class="sc-head"><span class="sc-title">ONLINE DEVS</span><span class="sc-badge" id="onlineCount">● 0</span></div>
+        <div class="sc-body"><div class="online-list" id="onlineList"></div></div>
+      </div>
+
+      <!-- LIVE PROJECTS -->
+      <div class="side-card">
+        <div class="sc-head"><span class="sc-title">SHARED PROJECTS</span><button style="font-family:var(--font-mono);font-size:8px;color:var(--accent);letter-spacing:1px;background:none;border:1px solid rgba(0,191,255,0.2);border-radius:4px;padding:3px 8px;cursor:pointer;" onclick="openModal('shareModal')">+ SHARE</button></div>
+        <div class="sc-body"><div class="project-list" id="projectList"></div></div>
+      </div>
+
+      <!-- RESOURCES -->
+      <div class="side-card">
+        <div class="sc-head"><span class="sc-title">QUICK RESOURCES</span></div>
+        <div class="sc-body">
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <a href="index.html#resources" style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none;padding:7px 10px;background:rgba(6,14,24,0.7);border:1px solid var(--border);border-radius:6px;transition:all .2s;" onmouseenter="this.style.borderColor='rgba(0,191,255,0.2)'" onmouseleave="this.style.borderColor='var(--border)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              Free API Directory
+            </a>
+            <a href="index.html#solutions" style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none;padding:7px 10px;background:rgba(6,14,24,0.7);border:1px solid var(--border);border-radius:6px;transition:all .2s;" onmouseenter="this.style.borderColor='rgba(198,168,92,0.2)'" onmouseleave="this.style.borderColor='var(--border)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Code Solutions
+            </a>
+            <a href="https://github.com" target="_blank" style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none;padding:7px 10px;background:rgba(6,14,24,0.7);border:1px solid var(--border);border-radius:6px;transition:all .2s;" onmouseenter="this.style.borderColor='rgba(167,139,250,0.2)'" onmouseleave="this.style.borderColor='var(--border)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              GitHub
+            </a>
+            <a href="https://stackoverflow.com" target="_blank" style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;font-weight:600;text-decoration:none;padding:7px 10px;background:rgba(6,14,24,0.7);border:1px solid var(--border);border-radius:6px;transition:all .2s;" onmouseenter="this.style.borderColor='rgba(245,130,32,0.2)'" onmouseleave="this.style.borderColor='var(--border)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Stack Overflow
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CREATE ROOM MODAL -->
+<div class="overlay" id="createModal">
+  <div class="modal">
+    <div class="mbar"></div>
+    <div class="mhead">
+      <div class="mtitle">CREATE ROOM</div>
+      <button class="mclose" onclick="closeModal('createModal')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fg"><label class="fl">Room Name *</label><input class="fi" type="text" id="rName" placeholder="My Awesome Project Room"></div>
+      <div class="fg"><label class="fl">Description</label><input class="fi" type="text" id="rDesc" placeholder="What are we building?"></div>
+      <div class="fg"><label class="fl">Room Type</label>
+        <select class="fs" id="rType">
+          <option value="code">💻 Coding / Pair Programming</option>
+          <option value="design">🎨 Design / UI Review</option>
+          <option value="review">🔍 Code Review</option>
+          <option value="study">📚 Study / Learning</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Tech Stack Tags</label><input class="fi" type="text" id="rTags" placeholder="React, Node.js, Python..."></div>
+      <div class="fg"><label class="fl">Max Members</label>
+        <select class="fs" id="rMax"><option>2</option><option selected>4</option><option>6</option><option>10</option></select>
+      </div>
+      <button class="fsub" onclick="createRoom()">CREATE ROOM →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE PROJECT MODAL -->
+<div class="overlay" id="shareModal">
+  <div class="modal">
+    <div class="mbar"></div>
+    <div class="mhead">
+      <div class="mtitle">SHARE PROJECT</div>
+      <button class="mclose" onclick="closeModal('shareModal')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fg"><label class="fl">Project Name *</label><input class="fi" type="text" id="pName" placeholder="My Awesome App"></div>
+      <div class="fg"><label class="fl">Description</label><textarea class="fi" id="pDesc" placeholder="What are you building?" style="resize:vertical;min-height:60px;"></textarea></div>
+      <div class="fg"><label class="fl">Tech Stack</label><input class="fi" type="text" id="pStack" placeholder="React, Supabase, Tailwind..."></div>
+      <div class="fg"><label class="fl">GitHub URL (optional)</label><input class="fi" type="url" id="pUrl" placeholder="https://github.com/user/repo"></div>
+      <div class="fg"><label class="fl">Status</label>
+        <select class="fs" id="pStatus"><option>🟢 Active — looking for collaborators</option><option>🟡 WIP — not ready yet</option><option>🔵 Showcase — feedback welcome</option></select>
+      </div>
+      <button class="fsub" onclick="shareProject()">SHARE PROJECT →</button>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 ANICADE TECH™ · COLLABORATION HUB · BUILT IN ZAMBIA</footer>
+<div id="toast"><span id="tIcon">✓</span><span id="tMsg">Done!</span></div>
+
+<script src="anicade-auth.js"></script>
+<script>
+// ── AUTH ──────────────────────────────────────────
+function getSession(){ try{ return JSON.parse(localStorage.getItem("anicade_session")||"null"); }catch{ return null; } }
+function clearSession(){ localStorage.removeItem("anicade_session"); }
+
+const CU = getSession();
+
+// Require login for collab hub
+if(!CU){
+  window.location.replace("login.html?redirect="+encodeURIComponent(location.href)+"&reason=collab");
+}
+
+const myName  = CU ? (CU.username || CU.firstName || "Dev_User") : "Dev_User";
+const myColor = "#00BFFF";
+
+// Set nav
+document.getElementById("navName").textContent = myName.toUpperCase();
+if(CU && CU.avatar) document.getElementById("navAv").src = CU.avatar;
+
+function doNavLogout(){
+  clearSession();
+  window.location.href = "login.html";
+}
+
+// ── ROOMS DATA ──
+const ROOMS_SEED = [
+  {id:"r1",name:"React + Supabase Fullstack",desc:"Building a real-time dashboard with React and Supabase.",type:"code",tags:["React","Supabase","TypeScript"],members:3,max:4,host:"tresfor_dev"},
+  {id:"r2",name:"Next.js 14 App Router",desc:"Migrating from pages router to the new App Router.",type:"code",tags:["Next.js","React","Server"],members:2,max:4,host:"code_nia"},
+  {id:"r3",name:"Design System Review",desc:"Reviewing component library. Feedback on spacing and tokens.",type:"design",tags:["Figma","CSS","Design"],members:4,max:6,host:"px_ludo"},
+  {id:"r4",name:"Python FastAPI Code Review",desc:"Code review session for REST API project.",type:"review",tags:["Python","FastAPI","REST"],members:1,max:4,host:"techZM"},
+  {id:"r5",name:"DSA Study Group",desc:"Solving LeetCode problems together. Beginners welcome.",type:"study",tags:["DSA","Python","Interview"],members:5,max:10,host:"dev_zak"},
+  {id:"r6",name:"Flutter Mobile App",desc:"Building a fintech mobile app with Flutter and Firebase.",type:"code",tags:["Flutter","Dart","Firebase"],members:2,max:4,host:"mobile_lex"},
+  {id:"r7",name:"Tailwind UI Components",desc:"Building a component library with Tailwind and Storybook.",type:"design",tags:["Tailwind","CSS","React"],members:3,max:6,host:"css_guru"},
+  {id:"r8",name:"Node.js Security Review",desc:"Reviewing auth and authorization implementation.",type:"review",tags:["Node","Security","JWT"],members:2,max:4,host:"sec_audit"},
+  {id:"r9",name:"ML with Python Basics",desc:"Learning scikit-learn and pandas from scratch.",type:"study",tags:["Python","ML","Data"],members:6,max:10,host:"data_kai"},
+  {id:"r10",name:"GraphQL API Design",desc:"Building a scalable GraphQL API with Prisma and NestJS.",type:"code",tags:["GraphQL","NestJS","Prisma"],members:1,max:4,host:"api_master"},
+  {id:"r11",name:"Svelte PWA Build",desc:"Creating a Progressive Web App with SvelteKit.",type:"code",tags:["Svelte","PWA","CSS"],members:2,max:4,host:"svelte_zam"},
+  {id:"r12",name:"Docker + K8s Workshop",desc:"Learning containerisation and orchestration together.",type:"study",tags:["Docker","K8s","DevOps"],members:4,max:8,host:"devops_king"},
+];
+let allRooms = [...ROOMS_SEED];
+let activeRoomId = null;
+
+// ── ONLINE SECTION (bots only + logged-in user) ──
+function renderOnline(){
+  const el = document.getElementById("onlineList");
+  const cnt = document.getElementById("onlineCount");
+  const total = atOnlineCount();
+  cnt.textContent = "● " + total;
+  document.getElementById("hOnline").textContent = total + "+";
+  el.innerHTML = "";
+  // Current user first
+  const uRow = document.createElement("div"); uRow.className = "online-dev";
+  uRow.innerHTML = `<div class="od-av" style="background:rgba(0,191,255,0.15);border-color:rgba(0,191,255,0.3);color:#00BFFF">${myName.charAt(0).toUpperCase()}</div><div><div class="od-name">${myName} (You)</div><div class="od-role">${(CU&&CU.role||"Developer").toUpperCase()}</div></div><div class="od-dot"></div>`;
+  el.appendChild(uRow);
+  AT_BOTS.forEach(b=>{
+    const avHtml = b.avatar ? `<img src="${b.avatar}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid ${b.color}44;">` : `<div class="od-av" style="background:${b.color}18;border-color:${b.color}30;color:${b.color}">${b.name.charAt(0)}</div>`;
+    const d = document.createElement("div"); d.className = "online-dev";
+    d.innerHTML = `${avHtml}<div><div class="od-name">${b.name}</div><div class="od-role">ANICADE BOT</div></div><div class="od-dot" style="background:${b.color};box-shadow:0 0 5px ${b.color}"></div>`;
+    el.appendChild(d);
+  });
+}
+
+// ── PROJECTS ──
+const SEED_PROJECTS = [
+  {name:"AfriPay Dashboard",owner:"tresfor_dev",stack:["React","Supabase","Stripe"],stars:12,forks:3,status:"active"},
+  {name:"ZamWeather PWA",owner:"dev_zak",stack:["Svelte","OpenWeather"],stars:8,forks:1,status:"active"},
+  {name:"AniBot Discord",owner:"code_nia",stack:["Node","Discord.js"],stars:24,forks:7,status:"showcase"},
+  {name:"EduTrack Mobile",owner:"mobile_lex",stack:["Flutter","Firebase"],stars:5,forks:2,status:"wip"},
+  {name:"DevPortfolio Gen",owner:"css_guru",stack:["Astro","Tailwind"],stars:31,forks:9,status:"active"},
+];
+let projects = [...SEED_PROJECTS];
+
+function renderProjects(){
+  const el = document.getElementById("projectList");
+  document.getElementById("hProjects").textContent = projects.length;
+  el.innerHTML = "";
+  projects.forEach(p=>{
+    const d = document.createElement("div"); d.className = "proj-item";
+    d.innerHTML = `<div class="proj-name">${p.name}</div><div class="proj-owner">by ${p.owner}</div><div class="proj-tags">${p.stack.map(s=>`<span class="ptag">${s}</span>`).join("")}</div><div class="proj-stats"><span class="ps">⭐ <span>${p.stars}</span></span><span class="ps">🍴 <span>${p.forks}</span></span><span class="ps">${p.status==="active"?"🟢":p.status==="wip"?"🟡":"🔵"} ${p.status.toUpperCase()}</span></div>`;
+    el.appendChild(d);
+  });
+}
+
+// ── ROOMS ──
+function renderRooms(filter="all"){
+  const grid = document.getElementById("roomsGrid");
+  document.getElementById("hRooms").textContent = allRooms.length;
+  grid.innerHTML = "";
+  const filtered = filter==="all" ? allRooms : allRooms.filter(r=>r.type===filter);
+  filtered.forEach(r=>{
+    const tagClass = {code:"tag-code",design:"tag-design",review:"tag-review",study:"tag-study"}[r.type]||"tag-code";
+    const iconClass = {code:"code",design:"design",review:"review",study:"study"}[r.type]||"code";
+    const iconSvg = {
+      code:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+      design:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 011.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>`,
+      review:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+      study:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>`,
+    }[r.type]||"";
+    const isFull = r.members >= r.max;
+    const mems = Array(Math.min(r.members,4)).fill(0).map((_,i)=>`<div class="rm-av">${String.fromCharCode(65+i)}</div>`).join("");
+    const d = document.createElement("div");
+    d.className = `room-card type-${r.type}`;
+    d.innerHTML = `
+      <div class="room-top">
+        <div class="room-icon ${iconClass}">${iconSvg}</div>
+        <div class="room-status"><div class="room-status-dot"></div>LIVE</div>
+      </div>
+      <div class="room-name">${r.name}</div>
+      <div class="room-desc">${r.desc}</div>
+      <div class="room-foot">
+        <div style="display:flex;align-items:center;">
+          <div class="room-members">${mems}</div>
+          <span class="room-count" style="margin-left:14px;">${r.members}/${r.max}</span>
+        </div>
+        <button class="join-btn" onclick="joinRoom('${r.id}')" ${isFull?"disabled style='opacity:.4;cursor:default;'":""} >${isFull?"FULL":"JOIN →"}</button>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:5px;flex-wrap:wrap;">${r.tags.map(t=>`<span class="room-tag ${tagClass}">${t}</span>`).join("")}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+function filterRooms(btn,type){
+  document.querySelectorAll(".rtab").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  renderRooms(type);
+}
+
+function joinRoom(id){
+  const room = allRooms.find(r=>r.id===id);
+  if(!room)return;
+  if(room.members>=room.max){toast("⚠️","This room is full");return;}
+  activeRoomId = id; room.members++;
+  document.getElementById("arTitle").textContent = room.name.toUpperCase();
+  document.getElementById("arDesc").textContent = room.desc;
+  document.getElementById("activeRoom").classList.add("open");
+  document.getElementById("activeRoom").scrollIntoView({behavior:"smooth",block:"start"});
+  document.getElementById("arcMsgs").innerHTML = "";
+  addRoomMsg("🤖 System",`${myName} joined the room!`,"#39ff14");
+  renderRooms(); toast("✓","Joined: "+room.name);
+}
+
+function leaveRoom(){
+  if(activeRoomId){ const r=allRooms.find(x=>x.id===activeRoomId); if(r) r.members=Math.max(0,r.members-1); }
+  activeRoomId = null;
+  document.getElementById("activeRoom").classList.remove("open");
+  renderRooms(); toast("👋","Left the room");
+}
+
+function addRoomMsg(name,text,color,fixedTime){
+  color = color || "#94A3B8";
+  const el = document.getElementById("arcMsgs");
+  const ts = fixedTime || new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+  const d = document.createElement("div"); d.className = "cmsg";
+  d.innerHTML = `<div class="cmsg-name" style="color:${color}">${name} <span style="font-size:8px;color:var(--muted);margin-left:4px;font-family:var(--font-mono)">${ts}</span></div><div class="cmsg-text">${text}</div>`;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function sendRoomMsg(){
+  const inp = document.getElementById("arcInput");
+  const v = inp.value.trim(); if(!v||!activeRoomId)return;
+  addRoomMsg(myName,v,myColor); inp.value="";
+}
+
+// ── GLOBAL CHAT ──
+let gcOnline = BOTS.length + 1;
+document.getElementById("gcOnline").textContent = `● ${gcOnline} online`;
+
+function gcTime(){ return new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}); }
+
+function addGCMsg(name,text,color,fixedTime,avatar,mine=false){
+  const el = document.getElementById("gcMsgs");
+  const ts = fixedTime || gcTime();
+  const initials = name.substring(0,2).toUpperCase();
+  const avHtml = avatar ? `<img src="${avatar}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid ${color}44;flex-shrink:0;">` : `<div style="width:28px;height:28px;border-radius:50%;background:${color}18;color:${color};display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:9px;font-weight:700;flex-shrink:0;">${initials}</div>`;
+  const d = document.createElement("div"); d.className = "gc-msg";
+  d.style.display="flex"; d.style.gap="8px"; d.style.alignItems="flex-start";
+  d.innerHTML = `${avHtml}<div><div class="gcm-name" style="color:${color}">${name}</div><div class="gcm-txt" ${mine?"style='background:rgba(0,191,255,0.08);border-color:rgba(0,191,255,0.2)'":''}>${text}</div><div class="gcm-time">${ts}</div></div>`;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+// Seed global chat with persistent bot schedule
+setTimeout(()=>addGCMsg("ANICADE Tech","Welcome to the Collaboration Hub! Connect, code and build together.","#C6A85C","",null),500);
+atSeedBots((name,msg,color,ts,avatar)=>addGCMsg(name,msg,color,ts,avatar));
+// Check admin broadcast
+(()=>{const bc=localStorage.getItem("anicade_broadcast");if(bc){try{const d=JSON.parse(bc);if(Date.now()-d.time<120000)setTimeout(()=>addGCMsg("📡 "+d.from,d.msg,"#ff8080","",null),1200);}catch{}localStorage.removeItem("anicade_broadcast");}})();
+
+function sendGlobal(){
+  const inp = document.getElementById("gcInput");
+  const v = inp.value.trim(); if(!v)return;
+  addGCMsg(myName,v,myColor,null,CU&&CU.avatar?CU.avatar:null,true);
+  inp.value="";
+}
+
+// ── CREATE ROOM ──
+function createRoom(){
+  const name=document.getElementById("rName").value.trim();
+  const desc=document.getElementById("rDesc").value.trim();
+  const type=document.getElementById("rType").value;
+  const tags=document.getElementById("rTags").value.split(",").map(t=>t.trim()).filter(Boolean);
+  const max=parseInt(document.getElementById("rMax").value);
+  if(!name){toast("⚠️","Room name is required");return;}
+  const id="r"+Date.now();
+  allRooms.unshift({id,name,desc:desc||"Custom room by "+myName,type,tags:tags.length?tags:["Custom"],members:1,max,host:myName});
+  renderRooms(); closeModal("createModal");
+  toast("✓","Room created!");
+  setTimeout(()=>joinRoom(id),400);
+}
+
+// ── SHARE PROJECT ──
+function shareProject(){
+  const name=document.getElementById("pName").value.trim();
+  const stack=document.getElementById("pStack").value.split(",").map(t=>t.trim()).filter(Boolean);
+  if(!name){toast("⚠️","Project name is required");return;}
+  projects.unshift({name,owner:myName,stack:stack.length?stack:["Custom"],stars:0,forks:0,status:"active"});
+  renderProjects(); closeModal("shareModal");
+  toast("✓","Project shared with the community!");
+}
+
+// ── MODAL ──
+function openModal(id){document.getElementById(id).classList.add("open");document.body.style.overflow="hidden";}
+function closeModal(id){document.getElementById(id).classList.remove("open");document.body.style.overflow="";}
+document.querySelectorAll(".overlay").forEach(o=>o.addEventListener("click",e=>{if(e.target===o)closeModal(o.id);}));
+
+// ── TOAST ──
+function toast(icon,msg){
+  const t=document.getElementById("toast");
+  document.getElementById("tIcon").textContent=icon; document.getElementById("tMsg").textContent=msg;
+  t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),3200);
+}
+
+// ── INIT ──
+renderRooms(); renderProjects(); renderOnline();
+</script>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>

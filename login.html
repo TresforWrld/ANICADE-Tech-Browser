@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0B1C2D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>ANICADE Tech Browser — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0B1C2D;--surface:#0d2035;--card:rgba(13,32,53,0.97);--accent:#00BFFF;--gold:#C6A85C;--text:#F5F7FA;--muted:#94A3B8;--border:rgba(255,255,255,0.07);--border-gold:rgba(198,168,92,0.22);--danger:#ff4444;--success:#39ff14;--font-head:'Orbitron',sans-serif;--font-body:'Rajdhani',sans-serif;--font-mono:'Space Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--primary);color:var(--text);font-family:var(--font-body);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;-webkit-tap-highlight-color:transparent;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,191,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+.rings{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.ring{position:absolute;top:50%;left:50%;border:1.5px solid transparent;border-radius:38% 62% 63% 37%/41% 44% 56% 59%;will-change:transform;}
+.ring:nth-child(1){width:900px;height:900px;margin:-450px 0 0 -450px;border-color:rgba(0,191,255,0.06);animation:s1 22s linear infinite;}
+.ring:nth-child(2){width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:41% 44% 56% 59%/38% 62% 63% 37%;border-color:rgba(198,168,92,0.05);animation:s2 16s linear infinite;}
+.ring:nth-child(3){width:380px;height:380px;margin:-190px 0 0 -190px;border-color:rgba(0,191,255,0.04);animation:s1 34s linear infinite reverse;}
+@keyframes s1{to{transform:rotate(360deg);}}
+@keyframes s2{to{transform:rotate(-360deg);}}
+
+/* NAV */
+nav{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:14px 28px;background:rgba(11,28,45,0.97);border-bottom:1px solid var(--border-gold);}
+.logo{font-family:var(--font-head);font-size:17px;font-weight:900;color:var(--gold);letter-spacing:2px;text-decoration:none;}
+.logo span{color:var(--accent);}
+.back-btn{display:flex;align-items:center;gap:6px;color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:1px;text-decoration:none;padding:7px 14px;border:1px solid var(--border);border-radius:6px;transition:all .2s;}
+.back-btn:hover{border-color:rgba(0,191,255,0.3);color:var(--accent);}
+
+/* MAIN */
+main{position:relative;z-index:1;flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.auth-wrap{width:100%;max-width:460px;}
+
+/* TOGGLE */
+.tab-row{display:flex;background:rgba(6,14,24,0.8);border:1px solid var(--border-gold);border-radius:12px;padding:4px;margin-bottom:24px;gap:3px;}
+.tab-btn{flex:1;padding:10px;border:none;border-radius:8px;font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .3s;background:transparent;color:var(--muted);}
+.tab-btn.on{background:rgba(0,191,255,0.12);color:var(--accent);border:1px solid rgba(0,191,255,0.25);}
+
+/* CARD */
+.acard{background:var(--card);border:1px solid var(--border-gold);border-radius:20px;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,0.5),0 0 40px rgba(0,191,255,0.04);}
+.abar{height:4px;background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));background-size:200%;animation:shimmer 3s linear infinite;}
+@keyframes shimmer{from{background-position:0%}to{background-position:200%}}
+
+/* LOGO RING */
+.logo-ring-wrap{text-align:center;padding:28px 0 16px;border-bottom:1px solid var(--border);}
+.logo-ring{position:relative;width:80px;height:80px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
+.logo-ring::before{content:'';position:absolute;inset:0;border-radius:38% 62% 63% 37%/41% 44% 56% 59%;border:2px solid rgba(198,168,92,0.5);animation:s1 5s linear infinite;}
+.logo-ring::after{content:'';position:absolute;inset:7px;border-radius:41% 44% 56% 59%/38% 62% 63% 37%;border:1.5px solid rgba(0,191,255,0.4);animation:s2 3.5s linear infinite;}
+.logo-ring img{width:56px;height:56px;border-radius:50%;object-fit:cover;position:relative;z-index:2;border:2px solid rgba(198,168,92,0.3);}
+.card-title{font-family:var(--font-head);font-size:19px;font-weight:700;color:var(--gold);letter-spacing:3px;margin-bottom:4px;}
+.card-sub{font-size:12px;color:var(--muted);}
+
+/* PANELS */
+.panel{display:none;padding:22px 26px 28px;}
+.panel.on{display:block;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* FORM */
+.fg{margin-bottom:14px;}
+.fl{display:block;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;}
+.fi,.fs{width:100%;background:rgba(4,10,18,0.9);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font-body);font-size:13px;padding:10px 13px;outline:none;transition:border-color .2s;font-weight:500;}
+.fi:focus,.fs:focus{border-color:rgba(0,191,255,0.4);box-shadow:0 0 10px rgba(0,191,255,0.05);}
+.fs option{background:var(--surface);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pw{position:relative;}
+.pw .fi{padding-right:42px;}
+.eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:3px;}
+.eye:hover{color:var(--accent);}
+.sbar{height:3px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden;}
+.sfill{height:100%;border-radius:2px;transition:all .3s;width:0%;}
+.fcheck{display:flex;align-items:flex-start;gap:8px;margin:10px 0;}
+.fcheck input{accent-color:var(--accent);margin-top:2px;flex-shrink:0;}
+.fcheck label{font-size:11px;color:var(--muted);line-height:1.6;}
+.fcheck label a{color:var(--accent);text-decoration:none;}
+
+/* AVATAR PICKER */
+.av-pick{position:relative;width:78px;height:78px;margin:0 auto 6px;cursor:pointer;}
+.av-pick img{width:78px;height:78px;border-radius:50%;object-fit:cover;border:3px solid var(--border-gold);}
+.av-ov{position:absolute;inset:0;border-radius:50%;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;}
+.av-pick:hover .av-ov{opacity:1;}
+.av-hint{text-align:center;font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:16px;}
+
+/* SUBMIT */
+.fsub{width:100%;padding:12px;background:linear-gradient(135deg,#004f80,#00BFFF);border:none;border-radius:8px;color:#fff;font-family:var(--font-head);font-size:10px;font-weight:700;letter-spacing:3px;cursor:pointer;box-shadow:0 0 18px rgba(0,191,255,0.18);transition:all .3s;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.fsub:hover{box-shadow:0 0 32px rgba(0,191,255,0.4);transform:translateY(-1px);}
+.fsub:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.fdiv{display:flex;align-items:center;gap:10px;margin:16px 0;}
+.fdivl{flex:1;height:1px;background:var(--border);}
+.fdivt{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:2px;}
+.oauth-btn{width:100%;padding:10px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:7px;transition:all .2s;}
+.oauth-btn:hover{border-color:rgba(0,191,255,0.3);color:var(--text);}
+.ffoot{text-align:center;font-size:11px;color:var(--muted);margin-top:14px;}
+.ffoot a{color:var(--accent);text-decoration:none;cursor:pointer;}
+.error-msg{font-family:var(--font-mono);font-size:10px;color:var(--danger);letter-spacing:1px;margin-top:6px;display:none;padding:8px 12px;background:rgba(255,68,68,0.06);border:1px solid rgba(255,68,68,0.2);border-radius:6px;}
+.error-msg.show{display:block;}
+.success-msg{font-family:var(--font-mono);font-size:10px;color:var(--success);letter-spacing:1px;margin-top:6px;display:none;padding:8px 12px;background:rgba(57,255,20,0.06);border:1px solid rgba(57,255,20,0.2);border-radius:6px;}
+.success-msg.show{display:block;}
+
+/* FORGOT */
+.forgot-link{display:block;text-align:right;font-family:var(--font-mono);font-size:9px;color:var(--accent);text-decoration:none;letter-spacing:1px;margin-bottom:16px;margin-top:-8px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--card);border:1px solid rgba(0,191,255,0.3);border-radius:10px;padding:11px 16px;font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--text);box-shadow:0 8px 28px rgba(0,0,0,0.5);transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:8px;}
+#toast.show{transform:translateY(0);opacity:1;}
+
+/* REDIRECT NOTICE */
+.redirect-notice{background:rgba(198,168,92,0.07);border:1px solid var(--border-gold);border-radius:10px;padding:12px 14px;margin-bottom:20px;display:none;align-items:center;gap:10px;}
+.redirect-notice.show{display:flex;}
+.redirect-notice svg{flex-shrink:0;}
+.redirect-notice p{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:1px;line-height:1.5;}
+
+@media(max-width:480px){
+  .auth-wrap{padding:0 4px;}
+  .acard{border-radius:14px;}
+  .panel{padding:16px 18px 22px;}
+  .frow{grid-template-columns:1fr;}
+  .logo-ring-wrap{padding:20px 0 12px;}
+  nav{padding:12px 16px;}
+}
+*{-webkit-tap-highlight-color:transparent !important;}
+</style>
+</head>
+<body>
+<div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+
+<nav>
+  <a href="index.html" class="logo">ANICADE<span>.TECH</span></a>
+  <a href="index.html" class="back-btn">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    HOME
+  </a>
+</nav>
+
+<main>
+  <div class="auth-wrap">
+
+    <!-- REDIRECT NOTICE -->
+    <div class="redirect-notice" id="redirectNotice">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p id="redirectMsg">Sign in to access this feature</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-row">
+      <button class="tab-btn on" id="tb-login" onclick="switchTab('login')">SIGN IN</button>
+      <button class="tab-btn" id="tb-register" onclick="switchTab('register')">REGISTER</button>
+    </div>
+
+    <div class="acard">
+      <div class="abar"></div>
+
+      <!-- ═══ SIGN IN ═══ -->
+      <div id="panel-login" class="panel on">
+        <div class="logo-ring-wrap">
+          <div class="logo-ring"><img src="https://i.imgur.com/RcBmjWM.png" onerror="this.style.display='none'"></div>
+          <div class="card-title">WELCOME BACK</div>
+          <div class="card-sub">Sign in to ANICADE Tech Browser</div>
+        </div>
+        <div style="height:22px"></div>
+
+        <button class="oauth-btn" onclick="toast('ℹ️','Google OAuth — coming soon')">
+          <svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <div class="fdiv"><div class="fdivl"></div><span class="fdivt">OR EMAIL</span><div class="fdivl"></div></div>
+
+        <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" id="liEmail" placeholder="you@example.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="fg">
+          <label class="fl">Password</label>
+          <div class="pw"><input class="fi" type="password" id="liPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"><button class="eye" onclick="togglePwd('liPass',this)">👁</button></div>
+        </div>
+        <a href="#" class="forgot-link">FORGOT PASSWORD?</a>
+        <div class="error-msg" id="loginErr"></div>
+        <button class="fsub" id="loginBtn" onclick="doLogin()">
+          <div class="spinner" id="loginSpin"></div>
+          SIGN IN →
+        </button>
+        <div class="ffoot">No account? <a onclick="switchTab('register')">Register free</a></div>
+      </div>
+
+      <!-- ═══ REGISTER ═══ -->
+      <div id="panel-register" class="panel">
+        <div class="logo-ring-wrap">
+          <div class="logo-ring"><img src="https://i.imgur.com/RcBmjWM.png" onerror="this.style.display='none'"></div>
+          <div class="card-title">JOIN THE HUB</div>
+          <div class="card-sub">Create your ANICADE Tech Browser account</div>
+        </div>
+        <div style="height:16px"></div>
+
+        <!-- AVATAR -->
+        <div class="av-pick" onclick="document.getElementById('avIn').click()">
+          <img id="avPreview" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='78' height='78'%3E%3Crect fill='%230d2035' width='78' height='78' rx='39'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%2300BFFF' font-size='28' font-family='Arial'%3E%3F%3C/text%3E%3C/svg%3E">
+          <div class="av-ov"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00BFFF" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        </div>
+        <input type="file" id="avIn" accept="image/*" style="display:none" onchange="previewAv(this)">
+        <div class="av-hint">CLICK TO ADD PHOTO (OPTIONAL)</div>
+
+        <div class="frow">
+          <div class="fg"><label class="fl">First Name *</label><input class="fi" type="text" id="rgFirst" placeholder="Tresfor"></div>
+          <div class="fg"><label class="fl">Last Name *</label><input class="fi" type="text" id="rgLast" placeholder="Zulu"></div>
+        </div>
+        <div class="fg"><label class="fl">Username *</label><input class="fi" type="text" id="rgUser" placeholder="tresfor_dev"></div>
+        <div class="fg"><label class="fl">Email Address *</label><input class="fi" type="email" id="rgEmail" placeholder="you@example.com"></div>
+        <div class="fg"><label class="fl">WhatsApp (optional)</label><input class="fi" type="tel" id="rgPhone" placeholder="+260 777 000 000"></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Country *</label><select class="fs" id="rgCountry"></select></div>
+          <div class="fg"><label class="fl">City</label><input class="fi" type="text" id="rgCity" placeholder="Kabwe"></div>
+        </div>
+        <div class="fg"><label class="fl">Specialisation</label>
+          <select class="fs" id="rgRole">
+            <option>Frontend Developer</option><option>Backend Developer</option>
+            <option>Full-Stack Developer</option><option>Mobile Developer</option>
+            <option>DevOps Engineer</option><option>Data Scientist / Analyst</option>
+            <option>AI / ML Engineer</option><option>Security Engineer</option>
+            <option>UI/UX Designer</option><option>Student / Learning</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Password * (min 8 chars)</label>
+          <div class="pw"><input class="fi" type="password" id="rgPass" placeholder="Min 8 characters" oninput="chkStr(this)"><button class="eye" onclick="togglePwd('rgPass',this)">👁</button></div>
+          <div class="sbar"><div class="sfill" id="sFill"></div></div>
+        </div>
+        <div class="fg">
+          <label class="fl">Confirm Password *</label>
+          <div class="pw"><input class="fi" type="password" id="rgPass2" placeholder="Repeat password"><button class="eye" onclick="togglePwd('rgPass2',this)">👁</button></div>
+        </div>
+        <div class="fcheck"><input type="checkbox" id="rgTerms"><label for="rgTerms">I agree to ANICADE Tech's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
+        <div class="fcheck"><input type="checkbox" id="rgNews" checked><label for="rgNews">Send me updates on new tools, APIs and dev resources</label></div>
+        <div class="error-msg" id="regErr"></div>
+        <div class="success-msg" id="regOk"></div>
+        <button class="fsub" id="regBtn" onclick="doRegister()">
+          <div class="spinner" id="regSpin"></div>
+          CREATE ACCOUNT →
+        </button>
+        <div class="ffoot">Already registered? <a onclick="switchTab('login')">Sign in</a></div>
+      </div>
+
+    </div><!-- /acard -->
+  </div><!-- /auth-wrap -->
+</main>
+
+<div id="toast"><span id="tIcon">✓</span><span id="tMsg"></span></div>
+
+<script src="anicade-auth.js"></script>
+<script>
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+const JSONBIN_KEY   = '$2a$10$your_jsonbin_master_key'; // replaced at runtime by stored key
+const USERS_BIN     = '69b14c5bc3097a1dd5173665';
+const JSONBIN_BASE  = 'https://api.jsonbin.io/v3/b';
+// We store the master key in localStorage so it's not hard-coded here
+// User sets it once via admin panel; fallback to localStorage or a read key
+const MASTER_KEY_LS = 'anicade_jb_master';
+
+// ── Country list ──
+const COUNTRIES = [
+  {n:'🇿🇲 Zambia',tz:'Africa/Lusaka'},{n:'🇿🇼 Zimbabwe',tz:'Africa/Harare'},
+  {n:'🇲🇼 Malawi',tz:'Africa/Blantyre'},{n:'🇹🇿 Tanzania',tz:'Africa/Dar_es_Salaam'},
+  {n:'🇰🇪 Kenya',tz:'Africa/Nairobi'},{n:'🇿🇦 South Africa',tz:'Africa/Johannesburg'},
+  {n:'🇧🇼 Botswana',tz:'Africa/Gaborone'},{n:'🇳🇦 Namibia',tz:'Africa/Windhoek'},
+  {n:'🇲🇿 Mozambique',tz:'Africa/Maputo'},{n:'🇺🇬 Uganda',tz:'Africa/Kampala'},
+  {n:'🇷🇼 Rwanda',tz:'Africa/Kigali'},{n:'🇪🇹 Ethiopia',tz:'Africa/Addis_Ababa'},
+  {n:'🇬🇭 Ghana',tz:'Africa/Accra'},{n:'🇳🇬 Nigeria',tz:'Africa/Lagos'},
+  {n:'🇪🇬 Egypt',tz:'Africa/Cairo'},{n:'🇸🇳 Senegal',tz:'Africa/Dakar'},
+  {n:'🇺🇸 USA (ET)',tz:'America/New_York'},{n:'🇺🇸 USA (PT)',tz:'America/Los_Angeles'},
+  {n:'🇬🇧 UK',tz:'Europe/London'},{n:'🇨🇦 Canada',tz:'America/Toronto'},
+  {n:'🇩🇪 Germany',tz:'Europe/Berlin'},{n:'🇫🇷 France',tz:'Europe/Paris'},
+  {n:'🇮🇳 India',tz:'Asia/Kolkata'},{n:'🇨🇳 China',tz:'Asia/Shanghai'},
+  {n:'🇯🇵 Japan',tz:'Asia/Tokyo'},{n:'🇦🇺 Australia',tz:'Australia/Sydney'},
+  {n:'🇧🇷 Brazil',tz:'America/Sao_Paulo'},{n:'🌍 Other (UTC)',tz:'UTC'},
+];
+
+// ══════════════════════════════════════════
+//  JSONBIN HELPERS
+// ══════════════════════════════════════════
+async function jbRead(binId){
+  const key = localStorage.getItem(MASTER_KEY_LS) || '';
+  const headers = {'Content-Type':'application/json'};
+  if(key) headers['X-Master-Key'] = key;
+  const r = await fetch(`${JSONBIN_BASE}/${binId}/latest`,{headers});
+  if(!r.ok) throw new Error('Read failed: '+r.status);
+  const d = await r.json();
+  return d.record;
+}
+
+async function jbWrite(binId, data){
+  const key = localStorage.getItem(MASTER_KEY_LS) || '';
+  if(!key) throw new Error('No JSONBin master key set');
+  const r = await fetch(`${JSONBIN_BASE}/${binId}`,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Master-Key':key},
+    body: JSON.stringify(data)
+  });
+  if(!r.ok) throw new Error('Write failed: '+r.status);
+  return (await r.json()).record;
+}
+
+// ── Check for stored master key prompt ──
+(function(){
+  const k = localStorage.getItem(MASTER_KEY_LS);
+  if(!k){
+    // Show subtle notice only if admin
+    const u = getSession();
+    if(u && u.isAdmin){
+      console.warn('No JSONBin master key. Set via admin panel.');
+    }
+  }
+})();
+
+// ══════════════════════════════════════════
+//  SESSION
+// ══════════════════════════════════════════
+function getSession(){ try{ return JSON.parse(localStorage.getItem('anicade_session')||'null'); }catch{ return null; } }
+function setSession(u){ localStorage.setItem('anicade_session', JSON.stringify(u)); }
+function clearSession(){ localStorage.removeItem('anicade_session'); }
+
+// ══════════════════════════════════════════
+//  REDIRECT HANDLING
+// ══════════════════════════════════════════
+const params = new URLSearchParams(location.search);
+const redirectTo = params.get('redirect') || 'index.html';
+const reason = params.get('reason') || '';
+const tab = params.get('tab') || 'login';
+
+if(reason){
+  const notice = document.getElementById('redirectNotice');
+  const msgs = {
+    chat:'Sign in to send messages in the global chat',
+    collab:'Sign in to access the Collaboration Hub',
+    search:'Sign in to unlock unlimited search results',
+    room:'Sign in to create or join collaboration rooms',
+    profile:'Sign in to view and edit your profile',
+  };
+  document.getElementById('redirectMsg').textContent = msgs[reason] || 'Sign in to access this feature';
+  notice.classList.add('show');
+}
+if(tab === 'register') switchTab('register');
+
+// If already logged in — redirect straight away
+const existingSession = getSession();
+if(existingSession){
+  window.location.replace(redirectTo);
+}
+
+// ══════════════════════════════════════════
+//  INIT UI
+// ══════════════════════════════════════════
+function populateSel(id){
+  const s = document.getElementById(id); if(!s) return;
+  COUNTRIES.forEach(c=>{
+    const o = document.createElement('option');
+    o.value = c.tz; o.textContent = c.n;
+    if(c.tz==='Africa/Lusaka') o.selected = true;
+    s.appendChild(o);
+  });
+}
+populateSel('rgCountry');
+
+// ══════════════════════════════════════════
+//  TAB SWITCH
+// ══════════════════════════════════════════
+function switchTab(name){
+  ['login','register'].forEach(t=>{
+    document.getElementById('panel-'+t).classList.toggle('on', t===name);
+    document.getElementById('tb-'+t).classList.toggle('on', t===name);
+  });
+}
+
+// ══════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════
+async function doLogin(){
+  const email = gv('liEmail');
+  const pass  = gv('liPass');
+  hideErr('loginErr');
+  if(!email||!pass){ showErr('loginErr','Enter your email and password'); return; }
+
+  // Admin shortcut — no JSONBin needed for admin
+  if(window.__AT_CHK && window.__AT_CHK(email, pass)){
+    const adminUser = {
+      id:'admin',firstName:'Admin',lastName:'',username:'anicade_admin',
+      email,role:'System Administrator',plan:'Elite',timezone:'Africa/Lusaka',
+      isAdmin:true,joined:Date.now(),searches:0,avatar:null
+    };
+    setSession(adminUser);
+    toast('🔑','Admin access granted!');
+    setTimeout(()=>window.location.replace(redirectTo), 800);
+    return;
+  }
+
+  setBusy('loginBtn','loginSpin',true);
+  try {
+    const record = await jbRead(USERS_BIN);
+    const users = record.users || [];
+    const found = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if(!found){ showErr('loginErr','No account found with that email. Please register.'); setBusy('loginBtn','loginSpin',false); return; }
+    if(found.pass !== btoa(pass)){ showErr('loginErr','Incorrect password. Please try again.'); setBusy('loginBtn','loginSpin',false); return; }
+    if(found.banned){ showErr('loginErr','This account has been suspended. Contact support.'); setBusy('loginBtn','loginSpin',false); return; }
+    // Update last login
+    found.lastLogin = Date.now();
+    await jbWrite(USERS_BIN, record);
+    const sessionUser = {...found}; delete sessionUser.pass;
+    setSession(sessionUser);
+    toast('✓','Welcome back, '+found.firstName+'!');
+    setTimeout(()=>window.location.replace(redirectTo), 900);
+  } catch(e){
+    // Fallback: if JSONBin fails (no key set), use localStorage
+    const lsUser = localStorage.getItem('anicade_reg_'+email);
+    if(lsUser){
+      const u = JSON.parse(lsUser);
+      if(u.pass === btoa(pass)){
+        const s = {...u}; delete s.pass;
+        setSession(s);
+        toast('✓','Signed in (offline mode) — Welcome, '+u.firstName+'!');
+        setTimeout(()=>window.location.replace(redirectTo), 900);
+      } else { showErr('loginErr','Incorrect password.'); }
+    } else {
+      showErr('loginErr','Could not connect to database. Check your key or try again.');
+      console.error(e);
+    }
+    setBusy('loginBtn','loginSpin',false);
+  }
+}
+
+// ══════════════════════════════════════════
+//  REGISTER
+// ══════════════════════════════════════════
+async function doRegister(){
+  const first   = gv('rgFirst');
+  const last    = gv('rgLast');
+  const username= gv('rgUser');
+  const email   = gv('rgEmail');
+  const pass    = gv('rgPass');
+  const pass2   = gv('rgPass2');
+  const country = document.getElementById('rgCountry').value;
+  const city    = gv('rgCity');
+  const role    = document.getElementById('rgRole').value;
+  const phone   = gv('rgPhone');
+  const terms   = document.getElementById('rgTerms').checked;
+  const avatar  = document.getElementById('avPreview').src;
+
+  hideErr('regErr'); hideOk('regOk');
+  if(!first||!last||!email||!pass){ showErr('regErr','Please fill in all required fields (*).'); return; }
+  if(pass!==pass2){ showErr('regErr','Passwords do not match.'); return; }
+  if(pass.length<8){ showErr('regErr','Password must be at least 8 characters.'); return; }
+  if(!terms){ showErr('regErr','You must accept the Terms of Service to continue.'); return; }
+  if(!email.includes('@')){ showErr('regErr','Please enter a valid email address.'); return; }
+
+  setBusy('regBtn','regSpin',true);
+
+  const newUser = {
+    id: 'u_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+    firstName:first, lastName:last, username:username||first.toLowerCase()+'_dev',
+    email:email.toLowerCase(), pass:btoa(pass), phone, city, role,
+    timezone:country||'Africa/Lusaka', plan:'Starter', joined:Date.now(),
+    searches:0, lastLogin:Date.now(), banned:false, isAdmin:false,
+    avatar: avatar && !avatar.includes('data:image/svg+xml') ? avatar : null,
+    news: document.getElementById('rgNews').checked
+  };
+
+  try {
+    let record = {};
+    try { record = await jbRead(USERS_BIN); } catch{ record = {users:[]}; }
+    if(!record.users) record.users = [];
+
+    const exists = record.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if(exists){ showErr('regErr','An account with this email already exists. Please sign in.'); setBusy('regBtn','regSpin',false); return; }
+
+    const usernameExists = record.users.find(u => u.username.toLowerCase() === newUser.username.toLowerCase());
+    if(usernameExists) newUser.username = newUser.username+'_'+(Math.floor(Math.random()*999));
+
+    record.users.push(newUser);
+    await jbWrite(USERS_BIN, record);
+
+    // Also keep local backup
+    const sessionUser = {...newUser}; delete sessionUser.pass;
+    localStorage.setItem('anicade_reg_'+email, JSON.stringify(newUser));
+    setSession(sessionUser);
+
+    showOk('regOk','Account created! Redirecting...');
+    toast('🎉','Welcome to ANICADE Tech Browser, '+first+'!');
+    setTimeout(()=>window.location.replace(redirectTo), 1200);
+  } catch(e){
+    // Offline fallback
+    console.warn('JSONBin write failed, using localStorage fallback:', e);
+    const lsExists = localStorage.getItem('anicade_reg_'+email);
+    if(lsExists){ showErr('regErr','Email already registered.'); setBusy('regBtn','regSpin',false); return; }
+    localStorage.setItem('anicade_reg_'+email, JSON.stringify(newUser));
+    const sessionUser = {...newUser}; delete sessionUser.pass;
+    setSession(sessionUser);
+    showOk('regOk','Account created (offline mode)! Redirecting...');
+    toast('🎉','Welcome, '+first+'! (Stored locally — add JSONBin key for cloud sync)');
+    setTimeout(()=>window.location.replace(redirectTo), 1400);
+  }
+}
+
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+function gv(id){ const e=document.getElementById(id); return e?e.value.trim():''; }
+function showErr(id,msg){ const e=document.getElementById(id); if(e){e.textContent=msg;e.classList.add('show');} }
+function hideErr(id){ const e=document.getElementById(id); if(e)e.classList.remove('show'); }
+function showOk(id,msg){ const e=document.getElementById(id); if(e){e.textContent=msg;e.classList.add('show');} }
+function hideOk(id){ const e=document.getElementById(id); if(e)e.classList.remove('show'); }
+function togglePwd(id,btn){ const i=document.getElementById(id); i.type=i.type==='password'?'text':'password'; btn.textContent=i.type==='password'?'👁':'🙈'; }
+function setBusy(btnId,spinId,busy){
+  const btn=document.getElementById(btnId), sp=document.getElementById(spinId);
+  if(btn){ btn.disabled=busy; btn.lastChild.textContent=busy?'PROCESSING...':''; }
+  if(sp) sp.style.display=busy?'block':'none';
+}
+function chkStr(inp){
+  const v=inp.value, f=document.getElementById('sFill'); if(!f)return;
+  let s=0;
+  if(v.length>=8)s++; if(/[A-Z]/.test(v))s++; if(/[0-9]/.test(v))s++; if(/[^A-Za-z0-9]/.test(v))s++;
+  f.style.width=(s*25)+'%';
+  f.style.background=['#ff4444','#f59e0b','#39ff14','#00BFFF'][s-1]||'transparent';
+}
+function previewAv(inp){
+  const f=inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{ document.getElementById('avPreview').src=e.target.result; };
+  r.readAsDataURL(f);
+}
+function toast(icon,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('tIcon').textContent=icon;
+  document.getElementById('tMsg').textContent=msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "name": "ANICADE Tech Browser",
+  "short_name": "AT Browser",
+  "description": "1000+ APIs, AI tools, dev resources and coding solutions by ANICADE Tech™",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0B1C2D",
+  "theme_color": "#0B1C2D",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='28' fill='%230B1C2D'/><text x='96' y='120' text-anchor='middle' font-family='Arial Black' font-size='80' font-weight='900' fill='%2300BFFF'>AT</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='72' fill='%230B1C2D'/><text x='256' y='320' text-anchor='middle' font-family='Arial Black' font-size='220' font-weight='900' fill='%2300BFFF'>AT</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["developer-tools", "productivity", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Search Resources",
+      "url": "/index.html#resources",
+      "description": "Browse 1000+ dev resources"
+    },
+    {
+      "name": "Collaboration Hub",
+      "url": "/collab.html",
+      "description": "Build with developers worldwide"
+    }
+  ]
+}
