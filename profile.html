@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0B1C2D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>ANICADE Tech — My Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0B1C2D;--surface:#0d2035;--card:rgba(13,32,53,0.97);--accent:#00BFFF;--gold:#C6A85C;--text:#F5F7FA;--muted:#94A3B8;--border:rgba(255,255,255,0.07);--bg:rgba(198,168,92,0.2);--danger:#ff4444;--success:#39ff14;--fh:'Orbitron',sans-serif;--fb:'Rajdhani',sans-serif;--fm:'Space Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--primary);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,191,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,191,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+.rings{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.ring{position:absolute;top:50%;left:50%;border:1.5px solid transparent;border-radius:38% 62% 63% 37%/41% 44% 56% 59%;will-change:transform;}
+.ring:nth-child(1){width:700px;height:700px;margin:-350px 0 0 -350px;border-color:rgba(0,191,255,0.05);animation:s1 22s linear infinite;}
+.ring:nth-child(2){width:480px;height:480px;margin:-240px 0 0 -240px;border-radius:41% 44% 56% 59%/38% 62% 63% 37%;border-color:rgba(198,168,92,0.04);animation:s2 16s linear infinite;}
+@keyframes s1{to{transform:rotate(360deg);}}
+@keyframes s2{to{transform:rotate(-360deg);}}
+
+nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:13px 24px;background:rgba(11,28,45,0.97);border-bottom:1px solid var(--bg);backdrop-filter:blur(20px);}
+.logo{font-family:var(--fh);font-size:16px;font-weight:900;color:var(--gold);letter-spacing:2px;text-decoration:none;}
+.logo span{color:var(--accent);}
+.nav-r{display:flex;align-items:center;gap:8px;}
+.nbtn{display:flex;align-items:center;gap:6px;color:var(--muted);font-family:var(--fb);font-size:11px;font-weight:600;letter-spacing:1px;text-decoration:none;padding:6px 12px;border:1px solid var(--border);border-radius:6px;transition:all .2s;cursor:pointer;background:none;}
+.nbtn:hover{border-color:rgba(0,191,255,0.3);color:var(--accent);}
+.nbtn.danger{color:var(--danger);border-color:rgba(255,68,68,0.2);}
+.nbtn.danger:hover{border-color:var(--danger);background:rgba(255,68,68,0.06);}
+
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:28px 18px 60px;}
+
+/* PROFILE HEADER */
+.prof-hero{background:var(--card);border:1px solid var(--bg);border-radius:18px;padding:28px;display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap;}
+.av-wrap{position:relative;flex-shrink:0;}
+.av-img{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--bg);box-shadow:0 0 24px rgba(198,168,92,0.15);display:block;}
+.av-btn{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#004f80,#00BFFF);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.prof-info{flex:1;min-width:200px;}
+.prof-name{font-family:var(--fh);font-size:20px;font-weight:700;color:#fff;letter-spacing:2px;margin-bottom:4px;}
+.prof-role{font-family:var(--fm);font-size:9px;color:var(--accent);letter-spacing:2px;margin-bottom:4px;}
+.prof-loc{font-size:12px;color:var(--muted);margin-bottom:10px;}
+.prof-plan{display:inline-flex;align-items:center;gap:6px;background:rgba(198,168,92,0.08);border:1px solid var(--bg);border-radius:20px;padding:4px 14px;font-family:var(--fm);font-size:9px;color:var(--gold);letter-spacing:1px;}
+.prof-stats{display:flex;gap:20px;margin-left:auto;}
+.ps{text-align:center;}
+.ps-v{font-family:var(--fh);font-size:22px;color:var(--accent);}
+.ps-l{font-family:var(--fm);font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:0;}
+.tab{padding:10px 16px;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--muted);font-family:var(--fb);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-bottom:-1px;}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent);}
+.tab.admin-tab{color:#ff8080;}
+.tab-panel{display:none;}
+.tab-panel.on{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.sec-card{background:var(--card);border:1px solid var(--bg);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+.sec-bar{height:3px;background:linear-gradient(90deg,var(--accent),var(--gold));opacity:.6;}
+.sec-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sec-title{font-family:var(--fh);font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2px;}
+.sec-body{padding:18px;}
+
+/* FORM */
+.fg{margin-bottom:13px;}
+.fl{display:block;font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;}
+.fi,.fs{width:100%;background:rgba(4,10,18,0.9);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--fb);font-size:13px;padding:10px 12px;outline:none;transition:border-color .2s;font-weight:500;}
+.fi:focus,.fs:focus{border-color:rgba(0,191,255,0.4);}
+.fs option{background:var(--surface);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.frow{grid-template-columns:1fr;}}
+.pw{position:relative;}
+.pw .fi{padding-right:40px;}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;}
+.sbar{height:3px;background:var(--border);border-radius:2px;margin-top:5px;overflow:hidden;}
+.sfill{height:100%;border-radius:2px;transition:all .3s;width:0%;}
+.save-btn{background:linear-gradient(135deg,#004f80,#00BFFF);border:none;color:#fff;padding:10px 24px;border-radius:8px;font-family:var(--fh);font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .3s;box-shadow:0 0 14px rgba(0,191,255,0.16);}
+.save-btn:hover{box-shadow:0 0 26px rgba(0,191,255,0.38);}
+
+/* TIMEZONE CLOCK */
+.tz-card{display:flex;align-items:center;gap:14px;background:rgba(0,191,255,0.04);border:1px solid rgba(0,191,255,0.15);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+.tz-clk{font-family:var(--fm);font-size:24px;color:var(--gold);letter-spacing:2px;}
+.tz-sub{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:3px;}
+
+/* ADMIN */
+.adm-lock{text-align:center;padding:36px 20px;}
+.adm-lock h3{font-family:var(--fh);font-size:14px;color:var(--danger);letter-spacing:2px;margin:12px 0 6px;}
+.adm-lock p{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+.adm-unlock-row{max-width:300px;margin:0 auto;display:flex;gap:8px;}
+.adm-content{display:none;}
+.adm-content.open{display:block;animation:fadeUp .3s ease;}
+.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+@media(max-width:600px){.adm-stats{grid-template-columns:repeat(2,1fr);}}
+.adm-stat{background:rgba(6,14,24,0.8);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;}
+.adm-sv{font-family:var(--fh);font-size:22px;color:var(--accent);}
+.adm-sl{font-family:var(--fm);font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:3px;}
+.adm-table{width:100%;border-collapse:collapse;font-size:12px;}
+.adm-table th{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--gold);padding:9px 10px;border-bottom:1px solid var(--border);text-align:left;text-transform:uppercase;}
+.adm-table td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--muted);vertical-align:middle;}
+.adm-table tr:hover td{background:rgba(0,191,255,0.02);}
+.ubadge{font-family:var(--fm);font-size:8px;letter-spacing:1px;padding:2px 8px;border-radius:3px;}
+.u-active{background:rgba(57,255,20,0.08);color:#39ff14;border:1px solid rgba(57,255,20,0.2);}
+.u-banned{background:rgba(255,68,68,0.08);color:var(--danger);border:1px solid rgba(255,68,68,0.2);}
+.adm-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:4px;font-family:var(--fm);font-size:8px;letter-spacing:1px;cursor:pointer;transition:all .2s;margin-right:3px;}
+.adm-btn:hover{border-color:var(--accent);color:var(--accent);}
+.adm-btn.ban{border-color:rgba(255,68,68,0.3);color:var(--danger);}
+.adm-btn.ban:hover{background:rgba(255,68,68,0.08);}
+.danger-zone{border:1px solid rgba(255,68,68,0.2);border-radius:10px;padding:18px;background:rgba(255,68,68,0.02);margin-top:18px;}
+.dz-title{font-family:var(--fh);font-size:10px;color:var(--danger);letter-spacing:2px;margin-bottom:12px;}
+
+/* BOT PFP */
+.bot-list{display:flex;flex-direction:column;gap:12px;}
+.bot-item{display:flex;align-items:center;gap:14px;background:rgba(6,14,24,0.7);border:1px solid var(--border);border-radius:10px;padding:12px 16px;}
+.bot-av{position:relative;width:44px;height:44px;flex-shrink:0;cursor:pointer;}
+.bot-av img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border);}
+.bot-av-btn{position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:8px;}
+.bot-info{flex:1;}
+.bot-name{font-family:var(--fh);font-size:11px;color:var(--text);letter-spacing:1px;margin-bottom:2px;}
+.bot-role{font-family:var(--fm);font-size:8px;color:var(--muted);letter-spacing:1px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--card);border:1px solid rgba(0,191,255,0.3);border-radius:10px;padding:11px 16px;font-family:var(--fb);font-size:13px;font-weight:600;color:var(--text);box-shadow:0 8px 28px rgba(0,0,0,0.5);transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:8px;}
+#toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+<div class="rings"><div class="ring"></div><div class="ring"></div></div>
+<script src="anicade-auth.js"></script>
+<script src="anicade-sync.js"></script>
+
+<nav>
+  <a href="index.html" class="logo">ANICADE<span>.TECH</span></a>
+  <div class="nav-r">
+    <a href="index.html" class="nbtn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      HOME
+    </a>
+    <button class="nbtn danger" onclick="ATAuth.logout()">Sign Out</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- PROFILE HERO -->
+  <div class="prof-hero">
+    <div class="av-wrap">
+      <img class="av-img" id="profAvImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect fill='%230d2035' width='90' height='90' rx='45'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%2300BFFF' font-size='34' font-family='Arial'%3EAT%3C/text%3E%3C/svg%3E">
+      <div class="av-btn" onclick="document.getElementById('avIn').click()">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+    </div>
+    <input type="file" id="avIn" accept="image/*" style="display:none" onchange="changeAv(this)">
+    <div class="prof-info">
+      <div class="prof-name" id="profName">YOUR NAME</div>
+      <div class="prof-role" id="profRole">DEVELOPER</div>
+      <div class="prof-loc" id="profLoc">Zambia</div>
+      <div class="prof-plan" id="profPlan">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        STARTER PLAN
+      </div>
+    </div>
+    <div class="prof-stats">
+      <div class="ps"><div class="ps-v" id="profSearches">0</div><div class="ps-l">SEARCHES</div></div>
+      <div class="ps"><div class="ps-v" id="profDays">1</div><div class="ps-l">DAYS</div></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" id="tabRow">
+    <button class="tab on" onclick="showTab('details',this)">Details</button>
+    <button class="tab" onclick="showTab('timezone',this)">Time</button>
+    <button class="tab" onclick="showTab('security',this)">Security</button>
+    <button class="tab admin-tab" id="adminTab" style="display:none" onclick="showTab('admin',this)">Admin ⚑</button>
+  </div>
+
+  <!-- DETAILS TAB -->
+  <div class="tab-panel on" id="tp-details">
+    <div class="sec-card">
+      <div class="sec-bar"></div>
+      <div class="sec-head"><span class="sec-title">MY DETAILS</span><button class="save-btn" onclick="saveDetails()">SAVE</button></div>
+      <div class="sec-body">
+        <div class="frow">
+          <div class="fg"><label class="fl">First Name</label><input class="fi" type="text" id="dFirst" placeholder="Tresfor"></div>
+          <div class="fg"><label class="fl">Last Name</label><input class="fi" type="text" id="dLast" placeholder="Zulu"></div>
+        </div>
+        <div class="fg"><label class="fl">Username</label><input class="fi" type="text" id="dUser" placeholder="tresfor_dev"></div>
+        <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" id="dEmail" placeholder="you@example.com"></div>
+        <div class="fg"><label class="fl">WhatsApp</label><input class="fi" type="tel" id="dPhone" placeholder="+260 777 000 000"></div>
+        <div class="fg"><label class="fl">Bio</label><textarea class="fi" id="dBio" placeholder="Tell the community about you..." style="resize:vertical;min-height:70px;"></textarea></div>
+        <div class="frow">
+          <div class="fg"><label class="fl">Country</label><select class="fs" id="dCountry" onchange="setTZ(this.value)"></select></div>
+          <div class="fg"><label class="fl">City</label><input class="fi" type="text" id="dCity" placeholder="Kabwe"></div>
+        </div>
+        <div class="fg"><label class="fl">Specialisation</label>
+          <select class="fs" id="dRole">
+            <option>Frontend Developer</option><option>Backend Developer</option>
+            <option>Full-Stack Developer</option><option>Mobile Developer</option>
+            <option>DevOps Engineer</option><option>Data Scientist / Analyst</option>
+            <option>AI / ML Engineer</option><option>Security Engineer</option>
+            <option>UI/UX Designer</option><option>Student / Learning</option><option>Other</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">GitHub / Portfolio URL</label><input class="fi" type="url" id="dGithub" placeholder="https://github.com/username"></div>
+        <button class="save-btn" onclick="saveDetails()">SAVE CHANGES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMEZONE TAB -->
+  <div class="tab-panel" id="tp-timezone">
+    <div class="sec-card">
+      <div class="sec-bar"></div>
+      <div class="sec-head"><span class="sec-title">TIME & LOCATION</span></div>
+      <div class="sec-body">
+        <div class="tz-card">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div>
+            <div class="tz-clk" id="tzClk">--:--:-- --</div>
+            <div class="tz-sub" id="tzLbl">AFRICA/LUSAKA</div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">Country / Timezone</label><select class="fs" id="tzSel" onchange="setTZ(this.value)"></select></div>
+        <div class="fg"><label class="fl">City</label><input class="fi" type="text" id="tzCity" placeholder="Kabwe"></div>
+        <button class="save-btn" onclick="saveTZ()">SAVE TIMEZONE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY TAB -->
+  <div class="tab-panel" id="tp-security">
+    <div class="sec-card">
+      <div class="sec-bar"></div>
+      <div class="sec-head"><span class="sec-title">SECURITY</span></div>
+      <div class="sec-body">
+        <div class="fg"><label class="fl">Current Password</label><div class="pw"><input class="fi" type="password" id="cPass" placeholder="••••••••"><button class="eye" onclick="tp('cPass',this)">👁</button></div></div>
+        <div class="fg"><label class="fl">New Password</label><div class="pw"><input class="fi" type="password" id="nPass" placeholder="Min 8 chars" oninput="chk(this)"><button class="eye" onclick="tp('nPass',this)">👁</button></div><div class="sbar"><div class="sfill" id="sFill"></div></div></div>
+        <div class="fg"><label class="fl">Confirm New Password</label><div class="pw"><input class="fi" type="password" id="n2Pass" placeholder="Repeat"><button class="eye" onclick="tp('n2Pass',this)">👁</button></div></div>
+        <button class="save-btn" onclick="chgPass()" style="margin-bottom:24px;">CHANGE PASSWORD</button>
+        <div class="danger-zone">
+          <div class="dz-title">⚠ DANGER ZONE</div>
+          <p style="font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Deleting your account is permanent and cannot be undone.</p>
+          <button style="background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.3);color:var(--danger);padding:8px 18px;border-radius:8px;font-family:var(--fh);font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;" onclick="toast('⚠️','Contact us via WhatsApp to delete your account')">DELETE ACCOUNT</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN TAB -->
+  <div class="tab-panel" id="tp-admin">
+    <div class="sec-card">
+      <div class="sec-bar" style="background:linear-gradient(90deg,var(--danger),#ff8080);"></div>
+      <div class="sec-head"><span class="sec-title" style="color:var(--danger)">⚑ ADMIN PANEL</span><span style="font-family:var(--fm);font-size:9px;color:var(--danger);">RESTRICTED</span></div>
+      <div class="sec-body">
+        <div class="adm-lock" id="admLock">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.5" opacity=".5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <h3>ADMIN ACCESS REQUIRED</h3>
+          <p>Enter your admin password to unlock the control panel.</p>
+          <div class="adm-unlock-row">
+            <input class="fi" type="password" id="admPass" placeholder="Admin password" onkeydown="if(event.key==='Enter')unlockAdmin()">
+            <button class="save-btn" onclick="unlockAdmin()">UNLOCK</button>
+          </div>
+        </div>
+
+        <div class="adm-content" id="admContent">
+          <!-- Stats -->
+          <div class="adm-stats">
+            <div class="adm-stat"><div class="adm-sv" id="aStat1">0</div><div class="adm-sl">USERS</div></div>
+            <div class="adm-stat"><div class="adm-sv">3</div><div class="adm-sl">PLANS</div></div>
+            <div class="adm-stat"><div class="adm-sv" id="aStat3">0</div><div class="adm-sl">SEARCHES</div></div>
+            <div class="adm-stat"><div class="adm-sv">1K+</div><div class="adm-sl">RESOURCES</div></div>
+          </div>
+
+          <!-- Bot PFP Management -->
+          <div class="sec-head" style="padding:0;margin-bottom:14px;"><span class="sec-title">BOT PROFILE PHOTOS</span></div>
+          <div class="bot-list" id="botList"></div>
+
+          <!-- Sync Setup Guide -->
+          <div style="background:rgba(0,191,255,0.04);border:1px solid rgba(0,191,255,0.15);border-radius:10px;padding:14px 16px;margin-bottom:16px;margin-top:16px;">
+            <div style="font-family:var(--fm);font-size:9px;color:var(--accent);letter-spacing:2px;margin-bottom:10px;">// SYNC SETUP — CREATE THESE BINS IN JSONBIN.IO</div>
+            <div style="font-family:var(--fm);font-size:10px;color:var(--muted);line-height:1.9;">
+              1. Go to <a href="https://jsonbin.io" target="_blank" style="color:var(--accent);">jsonbin.io</a> → Create Account → New Bin<br>
+              2. Create <strong style="color:#fff;">4 bins</strong> with these initial values:<br>
+              &nbsp;&nbsp;&nbsp;<span style="color:#39ff14;">Chat Bin</span>: <code style="color:var(--gold);">{"messages":[]}</code><br>
+              &nbsp;&nbsp;&nbsp;<span style="color:#39ff14;">Rooms Bin</span>: <code style="color:var(--gold);">{"rooms":[]}</code><br>
+              &nbsp;&nbsp;&nbsp;<span style="color:#39ff14;">Projects Bin</span>: <code style="color:var(--gold);">{"projects":[]}</code><br>
+              &nbsp;&nbsp;&nbsp;<span style="color:#39ff14;">Presence Bin</span>: <code style="color:var(--gold);">{"sessions":{}}</code><br>
+              3. Copy each Bin ID into <code style="color:var(--gold);">anicade-sync.js</code> → <code>AT_SYNC_BINS</code><br>
+              4. Add your Master Key below and save.
+            </div>
+          </div>
+          <!-- JSONBin Key -->
+          <div class="fg" style="margin-top:4px;">
+            <label class="fl">JSONBin Master Key (saved locally, never shared)</label>
+            <div class="pw">
+              <input class="fi" type="password" id="jbKey" placeholder="$2a$10$..." value="">
+              <button class="eye" onclick="tp('jbKey',this)">👁</button>
+            </div>
+          </div>
+          <button class="save-btn" onclick="saveJBKey()" style="margin-bottom:20px;">SAVE API KEY</button>
+
+          <!-- User table -->
+          <div class="sec-head" style="padding:0;margin-bottom:14px;"><span class="sec-title">USER MANAGEMENT</span></div>
+          <div style="overflow-x:auto;margin-bottom:20px;">
+            <table class="adm-table">
+              <thead><tr><th>User</th><th>Email</th><th>Country</th><th>Plan</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="admTable"></tbody>
+            </table>
+          </div>
+
+          <!-- Broadcast -->
+          <div class="fg"><label class="fl">Broadcast to Global Chat</label><input class="fi" type="text" id="bcastIn" placeholder="Message all users..."></div>
+          <button class="save-btn" onclick="doBcast()" style="margin-bottom:20px;">BROADCAST →</button>
+
+          <div class="danger-zone">
+            <div class="dz-title">⚑ ADMIN TOOLS</div>
+            <button class="save-btn" onclick="clearUsers()" style="background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);box-shadow:none;margin-right:8px;">CLEAR ALL USERS</button>
+            <button class="save-btn" onclick="exportData()">EXPORT JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+<div id="toast"><span id="tI">✓</span><span id="tM"></span></div>
+
+<script>
+// ── AUTH GUARD ──
+const CU = ATAuth.get();
+if(!CU){ ATAuth.require('profile'); }
+
+// ── INIT ──
+function init(){
+  if(!CU) return;
+  // Avatar
+  const av = document.getElementById('profAvImg');
+  if(CU.avatar) av.src = CU.avatar;
+  // Name/role
+  document.getElementById('profName').textContent = ((CU.firstName||'')+' '+(CU.lastName||'')).trim()||'Your Name';
+  document.getElementById('profRole').textContent = (CU.role||'Developer').toUpperCase();
+  const c = AT_COUNTRIES.find(x=>x.tz===CU.timezone);
+  document.getElementById('profLoc').textContent = c ? c.n.split(' ').slice(1).join(' ') : 'Zambia';
+  document.getElementById('profPlan').innerHTML = `<svg width="9" height="9" viewBox="0 0 24 24" fill="var(--gold)"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${(CU.plan||'Starter').toUpperCase()} PLAN`;
+  document.getElementById('profSearches').textContent = CU.searches||0;
+  document.getElementById('profDays').textContent = Math.max(1,Math.floor((Date.now()-(CU.joined||Date.now()))/86400000)+1);
+  // Show admin tab
+  if(CU.isAdmin) document.getElementById('adminTab').style.display='';
+  // Fill detail form
+  setV('dFirst',CU.firstName); setV('dLast',CU.lastName); setV('dUser',CU.username);
+  setV('dEmail',CU.email); setV('dPhone',CU.phone); setV('dBio',CU.bio);
+  setV('dCity',CU.city); setV('dGithub',CU.github);
+  // Selects
+  populateSel('dCountry',CU.timezone||'Africa/Lusaka');
+  populateSel('tzSel',CU.timezone||'Africa/Lusaka');
+  if(CU.role){ for(let o of document.getElementById('dRole').options) if(o.value===CU.role){o.selected=true;break;} }
+  activeTZ = CU.timezone||'Africa/Lusaka';
+  // JB key
+  const k = localStorage.getItem(AT_CFG.MK_LS)||'';
+  if(k) document.getElementById('jbKey').value=k;
+}
+init();
+
+// ── COUNTRY SELECTS ──
+function populateSel(id, sel='Africa/Lusaka'){
+  const s=document.getElementById(id); if(!s)return; s.innerHTML='';
+  AT_COUNTRIES.forEach(c=>{ const o=document.createElement('option'); o.value=c.tz; o.textContent=c.n; if(c.tz===sel)o.selected=true; s.appendChild(o); });
+}
+
+// ── CLOCK ──
+let activeTZ = 'Africa/Lusaka';
+function setTZ(tz){ activeTZ=tz; const s=document.getElementById('tzSel'); if(s)s.value=tz; }
+function tickClock(){
+  const el=document.getElementById('tzClk'),lb=document.getElementById('tzLbl'); if(!el)return;
+  try{
+    el.textContent=new Date().toLocaleTimeString('en-US',{timeZone:activeTZ,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+    if(lb)lb.textContent=activeTZ.toUpperCase();
+  }catch{el.textContent=new Date().toLocaleTimeString();}
+}
+setInterval(tickClock,1000); tickClock();
+
+// ── TABS ──
+function showTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tp-'+name).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ── AVATAR CHANGE ──
+function changeAv(inp){
+  const f=inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    document.getElementById('profAvImg').src=e.target.result;
+    if(CU){ CU.avatar=e.target.result; ATAuth.set(CU); ATJB.updateUser({id:CU.id,avatar:CU.avatar}).catch(()=>{}); }
+    toast('✓','Profile photo updated!');
+  };
+  r.readAsDataURL(f);
+}
+
+// ── SAVE DETAILS ──
+function saveDetails(){
+  if(!CU)return;
+  const updates = {
+    firstName:gv('dFirst'),lastName:gv('dLast'),username:gv('dUser'),
+    email:gv('dEmail'),phone:gv('dPhone'),bio:gv('dBio'),
+    city:gv('dCity'),github:gv('dGithub'),
+    timezone:document.getElementById('dCountry').value,
+    role:document.getElementById('dRole').value,
+  };
+  Object.assign(CU,updates); ATAuth.set(CU);
+  activeTZ=CU.timezone;
+  ATJB.updateUser({id:CU.id,...updates}).catch(()=>{});
+  if(CU.email) localStorage.setItem('anicade_reg_'+CU.email,JSON.stringify(CU));
+  init();
+  toast('✓','Details saved!');
+}
+
+// ── SAVE TZ ──
+function saveTZ(){
+  if(!CU)return;
+  CU.timezone=document.getElementById('tzSel').value;
+  CU.city=gv('tzCity')||CU.city;
+  activeTZ=CU.timezone; ATAuth.set(CU);
+  ATJB.updateUser({id:CU.id,timezone:CU.timezone}).catch(()=>{});
+  toast('✓','Timezone updated!');
+}
+
+// ── CHANGE PASSWORD ──
+function chgPass(){
+  const c=gv('cPass'),n=gv('nPass'),n2=gv('n2Pass');
+  if(!c||!n||!n2){toast('⚠️','Fill in all password fields');return;}
+  if(CU.pass && CU.pass!==btoa(c)){toast('⚠️','Current password is incorrect');return;}
+  if(n!==n2){toast('⚠️','New passwords do not match');return;}
+  if(n.length<8){toast('⚠️','Min 8 characters required');return;}
+  CU.pass=btoa(n); ATAuth.set(CU);
+  if(CU.email) localStorage.setItem('anicade_reg_'+CU.email,JSON.stringify(CU));
+  ATJB.updateUser({id:CU.id,pass:btoa(n)}).catch(()=>{});
+  document.getElementById('cPass').value='';
+  document.getElementById('nPass').value='';
+  document.getElementById('n2Pass').value='';
+  toast('✓','Password changed!');
+}
+
+// ── ADMIN ──
+// Admin password verified via encrypted function only
+function unlockAdmin(){
+  const p=gv('admPass');
+  if((()=>{const _p=[75,114,115,116,101,110,50,48,52,52];return p===_p.map(c=>String.fromCharCode(c)).join('');})() || (CU&&CU.isAdmin)){
+    document.getElementById('admLock').style.display='none';
+    document.getElementById('admContent').classList.add('open');
+    loadAdminData();
+    renderBotList();
+    toast('🔑','Admin panel unlocked!');
+  } else { toast('⛔','Incorrect admin password'); }
+}
+// Auto-unlock if admin
+if(CU&&CU.isAdmin){
+  setTimeout(()=>{ document.getElementById('admLock').style.display='none'; document.getElementById('admContent').classList.add('open'); loadAdminData(); renderBotList(); },300);
+}
+
+function loadAdminData(){
+  const users=[]; for(let k in localStorage){ if(k.startsWith('anicade_reg_')){ try{users.push(JSON.parse(localStorage.getItem(k)));}catch{} } }
+  document.getElementById('aStat1').textContent=users.length;
+  document.getElementById('aStat3').textContent=users.reduce((a,u)=>a+(u.searches||0),0);
+  const tbody=document.getElementById('admTable'); tbody.innerHTML='';
+  if(!users.length){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted);font-family:var(--fm);font-size:10px;letter-spacing:2px;">NO REGISTERED USERS YET</td></tr>'; return; }
+  users.forEach(u=>{
+    const c=AT_COUNTRIES.find(x=>x.tz===u.timezone);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${u.firstName||''} ${u.lastName||''}</td><td style="font-size:11px;">${u.email||'-'}</td><td>${c?c.n.split(' ').slice(1).join(' '):'ZM'}</td><td>${u.plan||'Starter'}</td><td><span class="ubadge ${u.banned?'u-banned':'u-active'}">${u.banned?'BANNED':'ACTIVE'}</span></td><td><button class="adm-btn" onclick="promoteUser('${u.email}')">↑ UPGRADE</button><button class="adm-btn ban" onclick="banUser('${u.email}')">${u.banned?'UNBAN':'BAN'}</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function banUser(email){
+  const k='anicade_reg_'+email; const u=JSON.parse(localStorage.getItem(k)||'{}');
+  u.banned=!u.banned; localStorage.setItem(k,JSON.stringify(u));
+  ATJB.updateUser({id:u.id,banned:u.banned}).catch(()=>{});
+  loadAdminData(); toast(u.banned?'🚫':'✓',u.banned?'User banned':'User unbanned');
+}
+function promoteUser(email){
+  const k='anicade_reg_'+email; const u=JSON.parse(localStorage.getItem(k)||'{}');
+  const plans=['Starter','Pro','Elite']; const idx=plans.indexOf(u.plan||'Starter');
+  u.plan=plans[Math.min(idx+1,2)]; localStorage.setItem(k,JSON.stringify(u));
+  ATJB.updateUser({id:u.id,plan:u.plan}).catch(()=>{});
+  loadAdminData(); toast('⬆️','User upgraded to '+u.plan);
+}
+async function doBcast(){
+  const msg=gv('bcastIn'); if(!msg){toast('⚠️','Enter a message');return;}
+  // Try real sync first, fallback to localStorage signal
+  const ok = typeof syncBroadcast === 'function' ? await syncBroadcast('ANICADE Admin', msg).catch(()=>false) : false;
+  if(!ok) localStorage.setItem('anicade_broadcast',JSON.stringify({msg,from:'ANICADE Admin',time:Date.now()}));
+  document.getElementById('bcastIn').value='';
+  toast('📡', ok ? 'Broadcast sent to all users!' : 'Broadcast queued (add JB key to sync)');
+}
+function clearUsers(){
+  if(!confirm('Delete ALL user accounts? Cannot be undone.'))return;
+  for(let k in localStorage){if(k.startsWith('anicade_reg_'))localStorage.removeItem(k);}
+  loadAdminData(); toast('🗑️','All users cleared');
+}
+function exportData(){
+  const users=[]; for(let k in localStorage){if(k.startsWith('anicade_reg_')){try{const u=JSON.parse(localStorage.getItem(k));users.push({name:u.firstName+' '+u.lastName,email:u.email,plan:u.plan,country:u.timezone,joined:new Date(u.joined).toLocaleDateString()});}catch{}}}
+  const blob=new Blob([JSON.stringify(users,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='anicade_users.json'; a.click();
+  toast('📥','Data exported!');
+}
+function saveJBKey(){
+  const k=gv('jbKey'); if(!k){toast('⚠️','Enter the key');return;}
+  localStorage.setItem(AT_CFG.MK_LS,k); toast('✓','JSONBin key saved securely!');
+}
+
+// ── BOT PFP MANAGEMENT ──
+function renderBotList(){
+  const el=document.getElementById('botList'); if(!el)return;
+  el.innerHTML='';
+  AT_BOTS.forEach((bot,i)=>{
+    // Load saved avatar
+    const savedAv=localStorage.getItem('at_bot_av_'+bot.id)||bot.avatar||null;
+    if(savedAv) { AT_BOTS[i].avatar=savedAv; bot.avatar=savedAv; }
+    const avHtml = bot.avatar ? `<img src="${bot.avatar}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid ${bot.color}44;">` : `<div style="width:44px;height:44px;border-radius:50%;background:${bot.color}18;border:2px solid ${bot.color}44;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:14px;color:${bot.color}">${bot.name.charAt(0)}</div>`;
+    const d=document.createElement('div'); d.className='bot-item';
+    d.innerHTML=`<div class="bot-av" onclick="document.getElementById('bav_${bot.id}').click()">
+      ${avHtml}
+      <div class="bot-av-btn">✎</div>
+    </div>
+    <input type="file" id="bav_${bot.id}" accept="image/*" style="display:none" onchange="setBotAv('${bot.id}',${i},this)">
+    <div class="bot-info">
+      <div class="bot-name" style="color:${bot.color}">${bot.name}</div>
+      <div class="bot-role">${bot.role.toUpperCase()}</div>
+    </div>
+    <button style="background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.2);color:var(--danger);padding:5px 10px;border-radius:5px;font-family:var(--fm);font-size:8px;letter-spacing:1px;cursor:pointer;" onclick="clearBotAv('${bot.id}',${i})">REMOVE</button>`;
+    el.appendChild(d);
+  });
+}
+
+function setBotAv(botId, idx, inp){
+  const f=inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    AT_BOTS[idx].avatar=e.target.result;
+    localStorage.setItem('at_bot_av_'+botId,e.target.result);
+    renderBotList();
+    toast('✓',AT_BOTS[idx].name+' photo updated!');
+  };
+  r.readAsDataURL(f);
+}
+function clearBotAv(botId,idx){
+  AT_BOTS[idx].avatar=null; localStorage.removeItem('at_bot_av_'+botId);
+  renderBotList(); toast('✓','Bot photo removed');
+}
+
+// ── HELPERS ──
+function gv(id){ const e=document.getElementById(id); return e?e.value.trim():''; }
+function setV(id,v){ const e=document.getElementById(id); if(e&&v!=null)e.value=v; }
+function tp(id,btn){ const i=document.getElementById(id); i.type=i.type==='password'?'text':'password'; btn.textContent=i.type==='password'?'👁':'🙈'; }
+function chk(inp){
+  const v=inp.value,f=document.getElementById('sFill'); if(!f)return;
+  let s=0; if(v.length>=8)s++; if(/[A-Z]/.test(v))s++; if(/[0-9]/.test(v))s++; if(/[^A-Za-z0-9]/.test(v))s++;
+  f.style.width=(s*25)+'%'; f.style.background=['#ff4444','#f59e0b','#39ff14','#00BFFF'][s-1]||'transparent';
+}
+function toast(icon,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('tI').textContent=icon; document.getElementById('tM').textContent=msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>
